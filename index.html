@@ -8,167 +8,130 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- React & ReactDOM (Production) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Babel per JSX -->
+    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- PWA Setup Script -->
     <script>
-        const manifest = {
-            "name": "StudyLog Registro",
-            "short_name": "StudyLog",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#f8f9fa",
-            "theme_color": "#ffffff",
-            "orientation": "portrait",
-            "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E", "sizes": "192x192", "type": "image/svg+xml" }]
-        };
-        const stringManifest = JSON.stringify(manifest);
-        const blobManifest = new Blob([stringManifest], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blobManifest);
-        const link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = manifestURL;
-        document.head.appendChild(link);
-
-        if ('serviceWorker' in navigator) {
-            const swCode = `self.addEventListener('install', (e) => e.waitUntil(self.skipWaiting())); self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim())); self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => new Response("Offline."))));`;
-            const blobSW = new Blob([swCode], {type: 'text/javascript'});
-            const swURL = URL.createObjectURL(blobSW);
-            navigator.serviceWorker.register(swURL).catch(() => {});
-        }
+        const manifest = { "name": "StudyLog Registro", "short_name": "StudyLog", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#ffffff", "orientation": "portrait", "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E", "sizes": "192x192", "type": "image/svg+xml" }] };
+        const link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'})); document.head.appendChild(link);
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(new Blob([`self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response("Offline."))));`], {type: 'text/javascript'})), {scope: './'}).catch(()=>{});
     </script>
 
     <style>
-        /* Utilities */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        body { padding-top: env(safe-area-inset-top); overflow: hidden; background-color: #f8f9fa; }
+        body { padding-top: env(safe-area-inset-top); overflow: hidden; background-color: #f8f9fa; overscroll-behavior: none; }
+        .progress-ring__circle { transition: stroke-dashoffset 0.5s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; will-change: stroke-dashoffset; }
         
-        .progress-ring__circle { transition: stroke-dashoffset 0.5s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        /* Animazioni Base */
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 25% { transform: translateY(-3px); } 75% { transform: translateY(3px); } }
+        .animate-logo-float { animation: float 4s ease-in-out infinite; will-change: transform; }
+        .animate-float-fast { animation: float 3s ease-in-out infinite; will-change: transform; }
+        
+        @keyframes shine { 
+            0% { transform: translateX(-100%) rotate(45deg); } 
+            100% { transform: translateX(100%) rotate(45deg); } 
+        }
+        .shine-effect { position: relative; overflow: hidden; }
+        .shine-effect::after { 
+            content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; 
+            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%); 
+            transform: translateX(-100%) rotate(45deg); animation: shine 3s infinite; 
+        }
 
-        /* Floating Animations */
-        @keyframes float { 0% { transform: translateY(0px); } 25% { transform: translateY(-3px); } 75% { transform: translateY(3px); } 100% { transform: translateY(0px); } }
-        .animate-logo-float { animation: float 4s ease-in-out infinite; }
-        .animate-float-fast { animation: float 3s ease-in-out infinite; }
-        @keyframes squish { 0% { transform: scale(1); } 40% { transform: scale(1.35, 0.65); } 50% { transform: scale(0.75, 1.25); } 60% { transform: scale(1.15, 0.85); } 100% { transform: scale(1); } }
-        .animate-squish { animation: squish 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-        /* --- LIQUID TRANSITION STYLES --- */
-        .liquid-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* GLOWING CARD AESTHETIC (Il Giardino - Stile Screenshot) */
+        .greenhouse-card {
+            position: relative;
             overflow: hidden;
+            background: #ffffff; /* Sfondo bianco pulito */
+            box-shadow: 
+                0 20px 40px -10px rgba(0,0,0,0.05), /* Ombra morbida principale */
+                0 0 0 1px rgba(0,0,0,0.03); /* Bordo sottilissimo */
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Layer 1: Glass Backdrop (Vetro) */
-        .liquid-backdrop {
-            position: absolute;
-            inset: 0;
-            background-color: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(0px);
-            -webkit-backdrop-filter: blur(0px);
-            opacity: 0;
-            /* Default transition (usata per il fade OUT): Lenta (1.0s) per il blur */
-            transition: opacity 1.0s ease, backdrop-filter 1.0s ease; 
-            z-index: 1;
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
+
+        @keyframes float-icon { 
+            0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 15px 20px rgba(0,0,0,0.1)); } 
+            50% { transform: translateY(-10px) scale(1.02); filter: drop-shadow(0 25px 25px rgba(0,0,0,0.15)); } 
+        }
+        .animate-float-icon { animation: float-icon 6s ease-in-out infinite; }
+
+        @keyframes pop-in {
+            0% { transform: scale(0.95); opacity: 0; } 
+            100% { transform: scale(1); opacity: 1; } 
+        }
+        .animate-pop-in { animation: pop-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        /* Animazione Finestra */
+        @keyframes window-open {
+            0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-window-open { animation: window-open 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
+
+        /* Animazione Barra Linfa (Left to Right) */
+        @keyframes grow-width {
+            from { width: 0%; }
+        }
+        .animate-grow-width { animation: grow-width 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: width; }
+
+        /* Pulse Glow per il cerchio centrale */
+        @keyframes soft-pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.15); }
+        }
+        .animate-soft-pulse { animation: soft-pulse 4s ease-in-out infinite; }
+
+        /* Vecchie animazioni mantenute */
+        @keyframes squish { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.35, 0.65); } 50% { transform: scale(0.75, 1.25); } 60% { transform: scale(1.15, 0.85); } }
+        .animate-squish { animation: squish 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform; }
+        @keyframes grow-up { 0% { transform: scaleY(0); opacity: 0; } 100% { transform: scaleY(1); opacity: 1; } }
+        .animate-bar-grow { animation: grow-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: bottom; will-change: transform, opacity; }
+        .liquid-overlay { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .liquid-backdrop { position: absolute; inset: 0; background-color: rgba(255, 255, 255, 0.3); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); opacity: 0; transition: opacity 1.0s ease, backdrop-filter 1.0s ease; z-index: 1; will-change: opacity, backdrop-filter; }
+        .liquid-state-expanding .liquid-backdrop { transition: opacity 0.4s ease, backdrop-filter 0.7s ease; }
+        .liquid-blob { position: absolute; width: 10vw; height: 10vw; border-radius: 50%; transform: scale(0); opacity: 0; transition: transform 0.7s cubic-bezier(0.7, 0, 0.2, 1); z-index: 2; will-change: transform; transform: translateZ(0); }
+        .morph-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; z-index: 3; opacity: 1; transition: opacity 0.3s ease; will-change: opacity; }
+        .liquid-state-fading .morph-container { opacity: 0; }
+        .liquid-anim-expanding .liquid-blob { transform: scale(35); opacity: 1; }
+        .liquid-anim-expanding .liquid-backdrop { opacity: 1; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .liquid-anim-fading .liquid-blob { transform: scale(40); opacity: 0; transition: opacity 0.5s ease-out; }
+        .liquid-anim-fading .liquid-backdrop { opacity: 0; backdrop-filter: blur(0px); }
+        @keyframes surrender { 0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(0) rotate(-45deg); opacity: 0; } }
+        @keyframes overpower { 0% { transform: translate(-50%, -50%) scale(0) rotate(180deg); opacity: 0; filter: drop-shadow(0 0 0px currentColor); } 50% { transform: translate(-50%, -50%) scale(2.5) rotate(-10deg); opacity: 1; filter: drop-shadow(0 0 40px currentColor); } 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 10px currentColor); } }
+        .animate-surrender { animation: surrender 0.4s ease-in forwards; will-change: transform, opacity; }
+        .animate-overpower { animation: overpower 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.1s; will-change: transform, opacity, filter; }
         
-        /* Override per l'entrata (expanding): Veloce */
-        .liquid-state-expanding .liquid-backdrop {
-            transition: opacity 0.4s ease, backdrop-filter 0.7s ease;
-        }
+        @keyframes fill-bar { 0% { width: 0%; } }
+        .animate-fill-bar { animation: fill-bar 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: width; }
 
-        /* Layer 2: Blob Liquido */
-        .liquid-blob {
-            position: absolute;
-            width: 10vw;
-            height: 10vw;
-            border-radius: 50%;
-            transform: scale(0);
-            opacity: 0;
-            transition: transform 0.7s cubic-bezier(0.7, 0, 0.2, 1);
-            z-index: 2;
+        @keyframes toast-float { 
+            0% { transform: translateY(-120%); opacity: 0; }
+            10% { transform: translateY(20%); opacity: 1; }
+            15% { transform: translateY(0); opacity: 1; }
+            85% { transform: translateY(0); opacity: 1; }
+            90% { transform: translateY(10%); opacity: 1; }
+            100% { transform: translateY(-120%); opacity: 0; }
         }
+        .animate-toast { animation: toast-float 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; will-change: transform, opacity; }
 
-        /* Layer 3: Icone (Morphing) */
-        .morph-container { 
-            position: absolute; 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            width: 200px; height: 200px; 
-            display: flex; align-items: center; justify-content: center; 
-            z-index: 3;
-            opacity: 1;
-            /* Transizione rapida per l'opacità delle icone */
-            transition: opacity 0.3s ease;
-        }
-
-        /* LOGICA INVERTITA: */
-        /* Quando siamo in fase 'fading' (uscita), le icone diventano trasparenti SUBITO (0.3s) */
-        /* Mentre il backdrop impiega 1.0s (definito sopra) */
-        .liquid-state-fading .morph-container {
-            opacity: 0;
-        }
-
-        /* Stati di Animazione Blob */
-        .liquid-anim-expanding .liquid-blob {
-            transform: scale(35);
-            opacity: 1;
-        }
-        .liquid-anim-expanding .liquid-backdrop {
-            opacity: 1;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-
-        .liquid-anim-fading .liquid-blob {
-            transform: scale(40);
-            opacity: 0;
-            transition: opacity 0.5s ease-out;
-        }
-        
-        .liquid-anim-fading .liquid-backdrop {
-            opacity: 0;
-            backdrop-filter: blur(0px);
-            /* La durata è gestita dalla regola base .liquid-backdrop (1.0s) */
-        }
-
-        /* --- ICON ANIMATIONS --- */
-        @keyframes surrender { 
-            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; } 
-            100% { transform: translate(-50%, -50%) scale(0) rotate(-45deg); opacity: 0; } 
-        }
-
-        @keyframes overpower { 
-            0% { transform: translate(-50%, -50%) scale(0) rotate(180deg); opacity: 0; filter: drop-shadow(0 0 0px currentColor); } 
-            50% { transform: translate(-50%, -50%) scale(2.5) rotate(-10deg); opacity: 1; filter: drop-shadow(0 0 40px currentColor); }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 10px currentColor); } 
-        }
-        
-        .animate-surrender { animation: surrender 0.4s ease-in forwards; }
-        .animate-overpower { animation: overpower 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.1s; }
-        
-        .bg-red-vibrant { background-color: #dc2626; }
-        .bg-orange-vibrant { background-color: #ea580c; }
-        .bg-emerald-vibrant { background-color: #059669; }
-        .bg-blue-vibrant { background-color: #2563eb; }
-
+        .bg-red-vibrant { background-color: #dc2626; } .bg-orange-vibrant { background-color: #ea580c; } .bg-emerald-vibrant { background-color: #059669; } .bg-blue-vibrant { background-color: #2563eb; }
         .color-transition { transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out; }
     </style>
 </head>
@@ -176,178 +139,166 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // --- ERROR BOUNDARY (Per evitare lo schermo bianco) ---
-        class ErrorBoundary extends React.Component {
-            constructor(props) { super(props); this.state = { hasError: false }; }
-            static getDerivedStateFromError(error) { return { hasError: true }; }
-            componentDidCatch(error, errorInfo) { console.error("Errore React:", error, errorInfo); }
-            render() {
-                if (this.state.hasError) {
-                    return (
-                        <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center font-sans">
-                            <h1 className="text-3xl font-bold text-slate-800 mb-4">Ops! Qualcosa è andato storto.</h1>
-                            <p className="text-slate-500 mb-6">Si è verificato un errore nell'applicazione. Prova a ripristinare i dati.</p>
-                            <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="bg-red-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-red-600 transition-colors">Ripristina App (Cancella Dati)</button>
-                        </div>
-                    );
-                }
-                return this.props.children;
-            }
-        }
-
-        // --- ICONS HELPER ---
-        const createIcon = (iconName) => {
-            try {
-                if (typeof lucide === 'undefined' || !lucide.icons) return () => null;
-                const iconData = lucide.icons[iconName];
-                if (!iconData) return () => null;
-                return ({ size = 24, className, ...props }) => React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", className: className, ...props }, ...iconData.map(([tag, attrs], i) => React.createElement(tag, { ...attrs, key: i })));
-            } catch(e) { return () => null; }
+        const ErrorBoundary = class extends React.Component { constructor(e) { super(e), this.state = { hasError: !1 } } static getDerivedStateFromError(e) { return { hasError: !0 } } componentDidCatch(e, r) { console.error(e, r) } render() { return this.state.hasError ? React.createElement("div", { className: "min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center font-sans" }, React.createElement("h1", { className: "text-3xl font-bold text-slate-800 mb-4" }, "Ops! Errore."), React.createElement("button", { onClick: () => { localStorage.clear(), window.location.reload() }, className: "bg-red-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-red-600" }, "Ripristina")) : this.props.children } };
+        
+        // Helper Lucide
+        const createIcon = (iconName) => { 
+            try { 
+                if (typeof lucide === 'undefined' || !lucide.icons) return () => React.createElement('div', {className: 'w-6 h-6'}); 
+                const iconData = lucide.icons[iconName]; 
+                if (!iconData) return () => React.createElement('div', {className: 'w-6 h-6'}); 
+                return ({ size = 24, className, ...props }) => React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", className: className, ...props }, ...iconData.map(([tag, attrs], i) => React.createElement(tag, { ...attrs, key: i }))); 
+            } catch(e) { return () => null; } 
         };
 
-        const Plus = createIcon('Plus'); const Minus = createIcon('Minus'); const FileText = createIcon('FileText'); const Mic = createIcon('Mic'); const Trash2 = createIcon('Trash2'); const Calendar = createIcon('Calendar'); const Clock = createIcon('Clock'); const BookOpen = createIcon('BookOpen'); const CheckCircle2 = createIcon('CheckCircle2'); const Search = createIcon('Search'); const X = createIcon('X'); const ChevronRight = createIcon('ChevronRight'); const ChevronDown = createIcon('ChevronDown'); const ChevronLeft = createIcon('ChevronLeft'); const Tag = createIcon('Tag'); const CornerDownRight = createIcon('CornerDownRight'); const AlertTriangle = createIcon('AlertTriangle'); const Download = createIcon('Download'); const Upload = createIcon('Upload'); const Target = createIcon('Target'); const Edit2 = createIcon('Edit2'); const CheckSquare = createIcon('CheckSquare'); const PieChart = createIcon('PieChart'); const StickyNote = createIcon('StickyNote'); const CalendarClock = createIcon('CalendarClock'); const Calculator = createIcon('Calculator'); const Hourglass = createIcon('Hourglass'); const CalendarDays = createIcon('CalendarDays'); const MapPin = createIcon('MapPin'); const Play = createIcon('Play'); const Pause = createIcon('Pause'); const RotateCcw = createIcon('RotateCcw'); const Settings = createIcon('Settings'); const Save = createIcon('Save'); const Zap = createIcon('Zap'); const BarChart3 = createIcon('BarChart3');
+        // Helper per Custom Icons (Stelline etc)
+        const LucideIcon = ({ name, size = 24, className }) => {
+            if (typeof lucide === 'undefined' || !lucide.icons || !lucide.icons[name]) return null;
+            const iconData = lucide.icons[name];
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {iconData.map(([tag, attrs], i) => React.createElement(tag, { ...attrs, key: i }))}
+                </svg>
+            );
+        };
 
-        // --- CUSTOM ICONS ---
-        const TomatoIcon = ({ size = 24, className, color = "currentColor", ...props }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
-                <path d="M12 2C8 3 5 5 5 9C5 14.5 8 19 12 19C16 19 19 14.5 19 9C19 5 16 3 12 2Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 2V5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 5C12 5 14 4 15 6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 5C12 5 10 4 9 6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-        );
+        // --- ICONE PERSONALIZZATE (SVG PLANT-BASED) ---
+        const CustomIcon = ({ type, size = 24, className }) => {
+            const props = { width: size, height: size, className, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" };
+            switch(type) {
+                case 'Seed': return <svg {...props}><path d="M12 22c-4 0-7-3-7-7 0-5 7-13 7-13s7 8 7 13c0 4-3 7-7 7z" /><circle cx="12" cy="15" r="2" fill="currentColor" fillOpacity="0.2" /></svg>;
+                case 'Sprout': return <svg {...props}><path d="M12 22v-8" /><path d="M12 14a4 4 0 0 1 4-4h2" /><path d="M12 14a4 4 0 0 0-4-4H6" /><path d="M12 22c-2 0-3-1-3-2s1-2 3-2 3 1 3 2-1 2-3 2z" /></svg>;
+                case 'Roots': return <svg {...props}><path d="M12 2v8" /><path d="M12 10c0 4-3 6-5 10" /><path d="M12 10c0 4 3 6 5 10" /><path d="M7 15c-1 2-2 3-4 3" /><path d="M17 15c1 2 2 3 4 3" /></svg>;
+                case 'Leaves': return <svg {...props}><path d="M12 20v-6" /><path d="M12 14c-4 0-7-4-7-8 0 0 4 3 7 3" /><path d="M12 14c4 0 7-4 7-8 0 0-4 3-7 3" /><path d="M12 14c0 3-2 5-2 7" /><path d="M12 14c0 3 2 5 2 7" /><path d="M12 14c0 3 2 5 2 7" /><path d="M12 6v4" /></svg>;
+                case 'Trunk': return <svg {...props}><rect x="8" y="2" width="8" height="20" rx="1" /><path d="M8 6h8" /><path d="M8 12h8" /><path d="M8 18h8" /></svg>;
+                case 'Daisy': return (
+                    <svg {...props}>
+                        <circle cx="12" cy="12" r="3" fill="currentColor" fillOpacity="0.3" />
+                        <path d="M12 2C12 2 15 6 15 9C15 10.6 13.6 12 12 12C10.4 12 9 10.6 9 9C9 6 12 2 12 2Z" />
+                        <path d="M12 22C12 22 9 18 9 15C9 13.4 10.4 12 12 12C13.6 12 15 13.4 15 15C15 18 12 22 12 22Z" />
+                        <path d="M22 12C22 12 18 15 15 15C13.4 15 12 13.6 12 12C12 10.4 13.4 9 15 9C18 9 22 12 22 12Z" />
+                        <path d="M2 12C2 12 6 9 9 9C10.6 9 12 10.4 12 12C12 13.6 10.6 15 9 15C6 15 2 12 2 12Z" />
+                    </svg>
+                );
+                case 'Fruit': return (<svg {...props}><circle cx="12" cy="14" r="7" /><path d="M12 7v-3" strokeLinecap="round" /><path d="M12 5c2 0 4 -2 4 -4" strokeLinecap="round" fill="none" /><circle cx="10" cy="12" r="1" fill="white" fillOpacity="0.4" stroke="none" /></svg>);
+                case 'Woodpecker': return (<svg {...props}><path d="M6 3v18" strokeWidth="3" /><path d="M18 8c0-2-2-3-3-3s-4 2-4 2l-3 4 3 6c2 1 4 0 5-1s2-4 2-8z" /><path d="M15 5l-2-2" strokeWidth="1.5" /><path d="M11 11l-3 1" /><circle cx="16" cy="7" r="1" fill="currentColor" stroke="none" /></svg>);
+                case 'Evergreen': return (<svg {...props}><path d="M12 3L4 19h16L12 3z" strokeLinejoin="round" strokeWidth="2.5" /><path d="M12 8L6 19" strokeWidth="1" opacity="0.6" /><path d="M12 8L18 19" strokeWidth="1" opacity="0.6" /><path d="M12 13l-4 6" strokeWidth="1" opacity="0.6" /><path d="M12 13l4 6" strokeWidth="1" opacity="0.6" /><rect x="11" y="19" width="2" height="3" fill="currentColor" /></svg>);
+                case 'Oak': return <svg {...props}><path d="M12 22v-5" /><path d="M6 17h12" /><path d="M6 17c-4 0-4-6 0-7 0-4 6-4 6-8 0 4 6 4 6 8 4 1 4 7 0 7" /></svg>;
+                case 'Sap': return (<svg {...props}><path d="M12 2.5c0 0-7 6-7 11.5a7 7 0 1 0 14 0C19 8.5 12 2.5 12 2.5z" strokeWidth="2" /><path d="M12 7.5c0 0-3 3-3 6.5a3 3 0 1 0 6 0C15 10.5 12 7.5 12 7.5z" fill="currentColor" fillOpacity="0.4" stroke="none"/></svg>);
+                case 'Golden': return (<svg {...props}><path d="M12 7 C 9 5 5 7 5 12 C 5 17 9 20 12 19 C 15 20 19 17 19 12 C 19 7 15 5 12 7" strokeWidth="2.5" /><path d="M12 7 Q 13 4 15 3" strokeWidth="2.5" strokeLinecap="round" /></svg>);
+                default: return <svg {...props}><circle cx="12" cy="12" r="10" /></svg>;
+            }
+        };
 
-        // --- COLOR PALETTE FOR SUBJECTS ---
-        const SUBJECT_COLORS = [
-            'bg-red-500', 'bg-orange-500', 'bg-amber-500', 'bg-yellow-500', 'bg-lime-500',
-            'bg-green-500', 'bg-emerald-500', 'bg-teal-500', 'bg-cyan-500', 'bg-sky-500',
-            'bg-blue-500', 'bg-indigo-500', 'bg-violet-500', 'bg-purple-500', 'bg-fuchsia-500', 
-            'bg-pink-500', 'bg-rose-500'
+        // --- DATA DEI TRAGUARDI BASATI SULLA LINFA (PUNTEGGIO) ---
+        const STREAK_MILESTONES = [
+            { score: 100, name: "Il Seme", desc: "Hai piantato l'intenzione di studiare.", color: "text-amber-600", bg: "bg-amber-100", glow: "rgba(245, 158, 11, 0.6)", icon: "Seed" },
+            { score: 300, name: "Il Germoglio", desc: "La tua abitudine sta rompendo la superficie.", color: "text-lime-600", bg: "bg-lime-100", glow: "rgba(132, 204, 22, 0.6)", icon: "Sprout" },
+            { score: 500, name: "Le Radici", desc: "Hai ancorato la tua abitudine nel terreno.", color: "text-emerald-600", bg: "bg-emerald-100", glow: "rgba(16, 185, 129, 0.6)", icon: "Roots" },
+            { score: 700, name: "Il Foliage", desc: "Un ciclo completo. La tua routine è attiva.", color: "text-green-600", bg: "bg-green-100", glow: "rgba(34, 197, 94, 0.6)", icon: "Leaves" },
+            { score: 1000, name: "Il Fusto", desc: "La struttura si alza. Cresci in verticale.", color: "text-teal-700", bg: "bg-teal-100", glow: "rgba(15, 118, 110, 0.6)", icon: "Trunk" },
+            { score: 1400, name: "La Fioritura", desc: "Due settimane. Il tuo impegno dà i primi frutti.", color: "text-pink-600", bg: "bg-pink-100", glow: "rgba(219, 39, 119, 0.6)", icon: "Daisy" },
+            { score: 2100, name: "Il Frutto", desc: "Tre settimane. Hai prodotto il primo nutrimento.", color: "text-orange-600", bg: "bg-orange-100", glow: "rgba(234, 88, 12, 0.6)", icon: "Fruit" },
+            { score: 3000, name: "L'Eterna Verde", desc: "Un mese di flusso ininterrotto. Disciplina pura.", color: "text-cyan-600", bg: "bg-cyan-100", glow: "rgba(8, 145, 178, 0.6)", icon: "Evergreen" },
+            { score: 4500, name: "Il Picchio", desc: "Ritmo e tenacia. Costruisci la tua casa nella costanza.", color: "text-stone-600", bg: "bg-stone-200", glow: "rgba(87, 83, 78, 0.6)", icon: "Woodpecker" },
+            { score: 6000, name: "Il Gigante Quercia", desc: "La tua abitudine è un monumento alla costanza.", color: "text-indigo-600", bg: "bg-indigo-100", glow: "rgba(79, 70, 229, 0.6)", icon: "Oak" },
+            { score: 7500, name: "La Linfa Ancestrale", desc: "L'energia vitale scorre. La disciplina è diventata essenza.", color: "text-blue-600", bg: "bg-blue-100", glow: "rgba(37, 99, 235, 0.6)", icon: "Sap" },
+            { score: 9000, name: "Il Frutteto d'Oro", desc: "Un trimestre di raccolta. Sei una leggenda.", color: "text-yellow-600", bg: "bg-yellow-100", glow: "rgba(202, 138, 4, 0.6)", icon: "Golden" }
         ];
 
-        const getTextClass = (bgClass) => bgClass ? bgClass.replace('bg-', 'text-') : 'text-blue-600';
+        // Standard Icons
+        const Plus=createIcon('Plus'), Minus=createIcon('Minus'), FileText=createIcon('FileText'), Mic=createIcon('Mic'), Trash2=createIcon('Trash2'), Calendar=createIcon('Calendar'), Clock=createIcon('Clock'), BookOpen=createIcon('BookOpen'), CheckCircle2=createIcon('CheckCircle2'), Search=createIcon('Search'), X=createIcon('X'), ChevronRight=createIcon('ChevronRight'), ChevronDown=createIcon('ChevronDown'), ChevronLeft=createIcon('ChevronLeft'), Tag=createIcon('Tag'), CornerDownRight=createIcon('CornerDownRight'), AlertTriangle=createIcon('AlertTriangle'), Download=createIcon('Download'), Upload=createIcon('Upload'), Target=createIcon('Target'), Edit2=createIcon('Edit2'), CheckSquare=createIcon('CheckSquare'), PieChart=createIcon('PieChart'), StickyNote=createIcon('StickyNote'), CalendarClock=createIcon('CalendarClock'), Calculator=createIcon('Calculator'), Hourglass=createIcon('Hourglass'), CalendarDays=createIcon('CalendarDays'), MapPin=createIcon('MapPin'), Play=createIcon('Play'), Pause=createIcon('Pause'), RotateCcw=createIcon('RotateCcw'), Settings=createIcon('Settings'), Save=createIcon('Save'), Zap=createIcon('Zap'), BarChart3=createIcon('BarChart3');
+        const Trophy=createIcon('Trophy'), Sprout=createIcon('Sprout'), Droplets=createIcon('Droplets');
 
-        // --- COMPONENT: Progress Circle ---
-        const ProgressCircle = ({ completed, total, size = 80, stroke = 6, color = "text-blue-600", showText = true, label = "", fontSize = "text-[10px]", labelSize = "text-[8px]", children }) => {
-            const radius = size / 2 - stroke * 2;
-            const circumference = radius * 2 * Math.PI;
-            const safeCompleted = isNaN(completed) ? 0 : completed;
-            const safeTotal = isNaN(total) ? 0 : total;
-            const progress = safeTotal > 0 ? Math.min(safeCompleted / safeTotal, 1) : 0;
-            const offset = circumference - progress * circumference;
+        const TomatoIcon=({size=24,className,color="currentColor",...e})=>(<svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...e}><path d="M12 2C8 3 5 5 5 9C5 14.5 8 19 12 19C16 19 19 14.5 19 9C19 5 16 3 12 2Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 2V5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 5C12 5 14 4 15 6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 5C12 5 10 4 9 6" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>);
+        const SUBJECT_COLORS=['bg-red-500','bg-orange-500','bg-amber-500','bg-yellow-500','bg-lime-500','bg-green-500','bg-emerald-500','bg-teal-500','bg-cyan-500','bg-sky-500','bg-blue-500','bg-indigo-500','bg-violet-500','bg-purple-500','bg-fuchsia-500','bg-pink-500','bg-rose-500'];
+        const getTextClass=(e)=>e?e.replace('bg-','text-'):'text-blue-600';
+        const debounce=(e,t)=>{let r;return(...a)=>{clearTimeout(r),r=setTimeout(()=>e(...a),t)}};
+        const ProgressCircle=({completed:e,total:t,size:r=80,stroke:a=6,color:n="text-blue-600",trackColor:tc="text-slate-100",showText:o=!0,label:l="",fontSize:s="text-[10px]",labelSize:c="text-[8px]",children:i})=>{const d=r/2-2*a,u=2*d*Math.PI,m=isNaN(e)?0:e,p=isNaN(t)?0:t,g=p>0?Math.min(m/p,1):0,h=u-g*u;return React.createElement("div",{className:"relative flex items-center justify-center",style:{width:r,height:r}},React.createElement("svg",{className:"w-full h-full",width:r,height:r},React.createElement("circle",{className:tc,strokeWidth:a,stroke:"currentColor",fill:"transparent",r:d,cx:r/2,cy:r/2}),React.createElement("circle",{className:`progress-ring__circle ${n}`,strokeWidth:a,strokeDasharray:u+" "+u,style:{strokeDashoffset:h},strokeLinecap:"round",stroke:"currentColor",fill:"transparent",r:d,cx:r/2,cy:r/2})),React.createElement("div",{className:"absolute inset-0 flex flex-col items-center justify-center text-slate-700"},i?i:o&&React.createElement(React.Fragment,null,React.createElement("span",{className:`${s} font-bold tracking-tighter`},Math.round(100*g)+"%"),l&&React.createElement("span",{className:`${c} text-slate-400 uppercase font-bold tracking-wider mt-0.5`},l))))};
 
+        // HELPER PER SYNC DATA UNIFICATA
+        const getTodayKey = () => {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        };
+
+        const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        const getFirstDayOfMonth = (date) => { const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay(); return day === 0 ? 6 : day - 1; };
+        const handleJumpToNextAppello = (upcoming, currentIndex) => { if (upcoming.length === 0) return -1; let nextIndex = currentIndex + 1; if (nextIndex >= upcoming.length) nextIndex = 0; return nextIndex; };
+
+
+        // --- COMPONENTE MODALE CELEBRATIVO ---
+        const CelebrationModal = ({ milestone, onClose }) => {
+            if (!milestone) return null;
             return (
-                <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-                    <svg className="w-full h-full" width={size} height={size}>
-                        <circle
-                            className="text-slate-100"
-                            strokeWidth={stroke}
-                            stroke="currentColor"
-                            fill="transparent"
-                            r={radius}
-                            cx={size / 2}
-                            cy={size / 2}
-                        />
-                        <circle
-                            className={`progress-ring__circle ${color}`}
-                            strokeWidth={stroke}
-                            strokeDasharray={circumference + ' ' + circumference}
-                            style={{ strokeDashoffset: offset }}
-                            strokeLinecap="round"
-                            stroke="currentColor"
-                            fill="transparent"
-                            r={radius}
-                            cx={size / 2}
-                            cy={size / 2}
-                        />
-                    </svg>
-                    
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700">
-                        {children ? children : (
-                            showText && (
-                                <>
-                                    <span className={`${fontSize} font-bold tracking-tighter`}>{Math.round(progress * 100)}%</span>
-                                    {label && <span className={`${labelSize} text-slate-400 uppercase font-bold tracking-wider mt-0.5`}>{label}</span>}
-                                </>
-                            )
-                        )}
+                <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity animate-in fade-in" onClick={onClose}></div>
+                    {/* Background Modale Colorato */}
+                    <div className={`relative w-full max-w-sm md:max-w-md rounded-[2.5rem] shadow-2xl p-8 overflow-hidden animate-pop-in-center flex flex-col items-center text-center ${milestone.bg}`}>
+                        <div className={`absolute top-0 inset-x-0 h-32 opacity-20 bg-gradient-to-b from-current to-transparent pointer-events-none ${milestone.color.replace('text', 'text')}`} style={{ color: 'currentColor' }}></div>
+                        <div className={`relative mb-6 p-6 rounded-full bg-white shadow-lg ring-8 ring-white/50 animate-float-icon`}>
+                            <CustomIcon type={milestone.icon} size={64} className={milestone.color} />
+                            <div className="absolute -top-2 -right-2 text-yellow-400 animate-bounce"><LucideIcon name="Sparkles" size={24} /></div>
+                            <div className="absolute bottom-0 -left-2 text-yellow-400 animate-pulse"><LucideIcon name="Star" size={16} /></div>
+                        </div>
+                        <div className="space-y-2 mb-8 relative z-10">
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Nuovo Traguardo</div>
+                            <h2 className={`text-3xl md:text-4xl font-black tracking-tight ${milestone.color.replace('text-', 'text-').replace('600', '900')}`}>
+                                {milestone.name.toUpperCase()}
+                            </h2>
+                            <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold bg-white/60 backdrop-blur ${milestone.color} mb-4 shadow-sm`}>
+                                {milestone.score} Linfa Totale
+                            </div>
+                            <p className="text-slate-700 font-medium text-lg leading-relaxed">
+                                {milestone.desc}
+                            </p>
+                        </div>
+                        <button onClick={onClose} className={`w-full py-4 rounded-2xl font-bold text-white text-lg shadow-xl hover:scale-105 active:scale-95 transition-all shine-effect ${milestone.color.replace('text-', 'bg-')}`}>
+                            Continua il Viaggio
+                        </button>
                     </div>
                 </div>
             );
         };
 
         const StudyTracker = () => {
-            // --- INITIALIZATION WITH ERROR HANDLING ---
-            const loadState = (key, defaultVal) => {
-                try {
-                    const item = localStorage.getItem(key);
-                    if (!item || item === "undefined" || item === "null") return defaultVal;
-                    return JSON.parse(item);
-                } catch (e) {
-                    console.warn(`Error loading ${key}, resetting to default.`, e);
-                    return defaultVal;
-                }
-            };
+            const loadState = (key, defaultVal) => { try { const item = localStorage.getItem(key); return (!item || item === "undefined" || item === "null") ? defaultVal : JSON.parse(item); } catch (e) { return defaultVal; } };
 
-            // 1. STATE
             const [viewMode, setViewMode] = React.useState('study');
-            
-            const [subjects, setSubjects] = React.useState(() => {
-                const defaultSubjects = [{ name: 'Matematica', goal: 0, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9, appelli: [], color: 'bg-blue-500', isOpen: true, subSubjects: [{name: 'Algebra', goal: 20, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9}, {name: 'Geometria', goal: 15, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9}] }];
-                const loaded = loadState('study_subjects', defaultSubjects);
-                return Array.isArray(loaded) ? loaded : defaultSubjects;
-            });
-
+            const [subjects, setSubjects] = React.useState(() => loadState('study_subjects', [{ name: 'Matematica', goal: 0, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9, appelli: [], color: 'bg-blue-500', isOpen: true, subSubjects: [{name: 'Algebra', goal: 20, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9}, {name: 'Geometria', goal: 15, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9}] }]));
             const [items, setItems] = React.useState(() => loadState('study_items', []));
-
-            // --- POMODORO STATE ---
             const [pomoMode, setPomoMode] = React.useState('work');
             const [pomoWorkDuration, setPomoWorkDuration] = React.useState(25);
             const [pomoBreakDuration, setPomoBreakDuration] = React.useState(5);
             const [pomoTime, setPomoTime] = React.useState(25 * 60);
             const [pomoIsActive, setPomoIsActive] = React.useState(false);
             const [isPomoSettingsOpen, setIsPomoSettingsOpen] = React.useState(false);
-            const [isSquishing, setIsSquishing] = React.useState(false); 
-            
-            // Scratchpad State
+            const [isSquishing, setIsSquishing] = React.useState(false);
             const [scratchpadNote, setScratchpadNote] = React.useState(() => localStorage.getItem('study_scratchpad') || '');
             const [isScratchpadOpen, setIsScratchpadOpen] = React.useState(false);
-            
-            // STRESS & PARTICLES STATE
             const [stressLevel, setStressLevel] = React.useState(0);
-            const [particles, setParticles] = React.useState([]);
-            
-            // NEW: Focus History & Reporting
+            const [particles, setParticles] = React.useState(() => []); // Optimized initial state
+            const particlesRef = React.useRef([]); // Fix stale closure
             const [focusHistory, setFocusHistory] = React.useState(() => loadState('study_focus_history', {}));
             const [isReportsOpen, setIsReportsOpen] = React.useState(false);
-            const [reportMode, setReportMode] = React.useState('weekly'); // 'weekly' or 'monthly'
+            const [reportMode, setReportMode] = React.useState('weekly');
             const [reportDate, setReportDate] = React.useState(new Date());
-
-            // Daily Focus Tracker
-            const [dailyFocusSeconds, setDailyFocusSeconds] = React.useState(() => {
-                try {
-                    const d = new Date();
-                    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                    const history = loadState('study_focus_history', {});
-                    return history[today] || 0;
-                } catch(e) { return 0; }
+            
+            // Contatore giornaliero syncato
+            const [dailyFocusSeconds, setDailyFocusSeconds] = React.useState(() => { 
+                try { return loadState('study_focus_history', {})[getTodayKey()] || 0; } catch(e) { return 0; } 
             });
 
-            // TOTAL SQUISH COUNT
             const [totalSquishCount, setTotalSquishCount] = React.useState(() => parseInt(localStorage.getItem('total_squish_count') || '0'));
-
-            // --- SHARED STATE ---
             const [activeSubject, setActiveSubject] = React.useState(() => subjects[0]?.name || '');
             const [activeSubSubject, setActiveSubSubject] = React.useState(null);
             const [searchQuery, setSearchQuery] = React.useState('');
             const [installPrompt, setInstallPrompt] = React.useState(null);
-            
-            // TRANSITION STATE
-            const [transitionState, setTransitionState] = React.useState('idle'); 
+            const [transitionState, setTransitionState] = React.useState('idle');
             const [transitionColor, setTransitionColor] = React.useState('bg-blue-vibrant');
             const [targetView, setTargetView] = React.useState(null);
-
-            // Modali
+            
+            // Modals
             const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
             const [isSubjectModalOpen, setIsSubjectModalOpen] = React.useState(false);
             const [isSubSubjectModalOpen, setIsSubSubjectModalOpen] = React.useState(false);
@@ -358,8 +309,8 @@
             const [isGlobalCalendarOpen, setIsGlobalCalendarOpen] = React.useState(false);
             const [deleteConfig, setDeleteConfig] = React.useState({ isOpen: false, type: null, data: null });
             const [targetSubjectForSub, setTargetSubjectForSub] = React.useState(null);
-
-            // Form States
+            
+            // Forms
             const [newItemTitle, setNewItemTitle] = React.useState('');
             const [newItemType, setNewItemType] = React.useState('pdf');
             const [newItemSubSubject, setNewItemSubSubject] = React.useState('');
@@ -373,360 +324,401 @@
             const [newAppelloDate, setNewAppelloDate] = React.useState('');
             const [newAppelloNote, setNewAppelloNote] = React.useState('');
             const [newPagesPerLesson, setNewPagesPerLesson] = React.useState(9);
-
             const [calDate, setCalDate] = React.useState(new Date());
             const [lastJumpIndex, setLastJumpIndex] = React.useState(-1);
             const [tooltip, setTooltip] = React.useState(null);
+            
+            // Highlight Logic
+            const [highlightedAppelloId, setHighlightedAppelloId] = React.useState(null);
 
-            // 2. EFFECTS
-            React.useEffect(() => { localStorage.setItem('study_subjects', JSON.stringify(subjects)); }, [subjects]);
-            React.useEffect(() => { localStorage.setItem('study_items', JSON.stringify(items)); }, [items]);
-            React.useEffect(() => { localStorage.setItem('total_squish_count', totalSquishCount.toString()); }, [totalSquishCount]);
-            React.useEffect(() => { localStorage.setItem('study_scratchpad', scratchpadNote); }, [scratchpadNote]); 
+            // Gamification & Streaks
+            const [isAchievementsOpen, setIsAchievementsOpen] = React.useState(false);
+            const [linfaPopups, setLinfaPopups] = React.useState([]); 
+            const [devScoreOffset, setDevScoreOffset] = React.useState(() => parseInt(localStorage.getItem('study_linfa_offset') || '0')); 
+            const [showCelebration, setShowCelebration] = React.useState(null); 
+            const [showBackupReminder, setShowBackupReminder] = React.useState(false);
 
-            // UPDATE HISTORY (Every 60s)
+            const debouncedSaveSubjects = React.useCallback(debounce((s) => localStorage.setItem('study_subjects', JSON.stringify(s)), 1000), []);
+            const debouncedSaveItems = React.useCallback(debounce((i) => localStorage.setItem('study_items', JSON.stringify(i)), 1000), []);
+            const debouncedSaveSquish = React.useCallback(debounce((c) => localStorage.setItem('total_squish_count', c.toString()), 1000), []);
+            const debouncedSaveScratch = React.useCallback(debounce((n) => localStorage.setItem('study_scratchpad', n), 1000), []);
+            const debouncedSaveOffset = React.useCallback(debounce((c) => localStorage.setItem('study_linfa_offset', c.toString()), 1000), []);
+
+            React.useEffect(() => debouncedSaveSubjects(subjects), [subjects]);
+            React.useEffect(() => debouncedSaveItems(items), [items]);
+            React.useEffect(() => debouncedSaveSquish(totalSquishCount), [totalSquishCount]);
+            React.useEffect(() => debouncedSaveScratch(scratchpadNote), [scratchpadNote]);
+            React.useEffect(() => debouncedSaveOffset(devScoreOffset), [devScoreOffset]);
+
+            // Aggiornamento Ref Particelle
+            React.useEffect(() => {
+                particlesRef.current = particles;
+            }, [particles]);
+
+            // Backup Reminder Logic
+            React.useEffect(() => {
+                const lastBackup = localStorage.getItem('study_last_backup');
+                const twoDaysMs = 2 * 24 * 60 * 60 * 1000;
+                if (!lastBackup || (Date.now() - parseInt(lastBackup) > twoDaysMs)) {
+                    const timer = setTimeout(() => setShowBackupReminder(true), 2000); 
+                    return () => clearTimeout(timer);
+                }
+            }, []);
+
+            // LOGICA STREAK & LINFA
+            const streakData = React.useMemo(() => {
+                const historyDates = Object.keys(focusHistory).sort((a, b) => new Date(b) - new Date(a)); 
+                let totalLinfa = 0; 
+                let streakDays = 0;
+                let lastValidDate = null;
+                const today = new Date(); today.setHours(0,0,0,0);
+
+                // Calcolo Linfa Totale
+                for (let i = 0; i < historyDates.length; i++) {
+                    const dateStr = historyDates[i];
+                    const seconds = focusHistory[dateStr];
+                    
+                    if (seconds >= 25 * 60) {
+                        const baseScore = 100;
+                        const extraBlocks = Math.floor((seconds - (25 * 60)) / (25 * 60));
+                        const dailyScore = baseScore + (extraBlocks * 50);
+                        totalLinfa += dailyScore;
+                    }
+                }
+                totalLinfa += devScoreOffset;
+
+                // Calcolo Giorni Streak Consecutivi
+                for (let i = 0; i < historyDates.length; i++) {
+                    const dateStr = historyDates[i];
+                    const seconds = focusHistory[dateStr];
+                    if (seconds < 25 * 60) continue;
+
+                    const currentDate = new Date(dateStr);
+                    currentDate.setHours(0,0,0,0);
+
+                    if (lastValidDate === null) {
+                        const diffDays = Math.ceil(Math.abs(today - currentDate) / (86400000)); 
+                        if (diffDays > 2) break;
+                        streakDays++;
+                        lastValidDate = currentDate;
+                    } else {
+                        const diffDays = Math.ceil(Math.abs(lastValidDate - currentDate) / (86400000));
+                        if (diffDays === 1 || diffDays === 2) {
+                            streakDays++;
+                            lastValidDate = currentDate;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                // Determina il Rank basato sulla LINFA (score)
+                const unlockedMilestones = STREAK_MILESTONES.filter(m => totalLinfa >= m.score);
+                const currentRank = unlockedMilestones.length > 0 
+                    ? unlockedMilestones[unlockedMilestones.length - 1] 
+                    : { name: "Terreno", icon: "X", color: "text-slate-300", bg: "bg-slate-50", glow: "rgba(148, 163, 184, 0.3)", score: 0, desc: "Inizia a studiare per piantare il seme.", border: "border-slate-200" };
+                
+                const nextRank = STREAK_MILESTONES.find(m => m.score > totalLinfa);
+
+                return { score: totalLinfa, streakDays, currentRank, nextRank };
+            }, [focusHistory, devScoreOffset]);
+
+            // Effetto per Popup Linfa
+            const prevScoreRef = React.useRef(streakData.score);
+            React.useEffect(() => {
+                if (streakData.score > prevScoreRef.current) {
+                    const diff = streakData.score - prevScoreRef.current;
+                    if (diff >= 50) {
+                        const id = Date.now();
+                        setLinfaPopups(prev => [...prev, { id, amount: diff }]);
+                        setTimeout(() => setLinfaPopups(prev => prev.filter(p => p.id !== id)), 4000);
+                    }
+                }
+                prevScoreRef.current = streakData.score;
+            }, [streakData.score]);
+
+            // Effetto per Modale Celebrazione
+            const prevRankNameRef = React.useRef(streakData.currentRank.name);
+            React.useEffect(() => {
+                if (prevRankNameRef.current !== "Nessuna Traccia" && streakData.currentRank.name !== prevRankNameRef.current) {
+                    setShowCelebration(streakData.currentRank);
+                }
+                prevRankNameRef.current = streakData.currentRank.name;
+            }, [streakData.currentRank.name]);
+
+            // SYNC GIORNALIERO
             React.useEffect(() => {
                 if (dailyFocusSeconds > 0 && dailyFocusSeconds % 60 === 0) {
-                    const d = new Date();
-                    const todayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                    setFocusHistory(prev => {
-                        const updated = { ...prev, [todayKey]: dailyFocusSeconds };
-                        localStorage.setItem('study_focus_history', JSON.stringify(updated));
-                        return updated;
-                    });
+                    const k = getTodayKey();
+                    setFocusHistory(p => { const u = { ...p, [k]: dailyFocusSeconds }; localStorage.setItem('study_focus_history', JSON.stringify(u)); return u; });
                 }
             }, [dailyFocusSeconds]);
 
-            // FORCE SAVE ON PAUSE
             React.useEffect(() => {
                 if (!pomoIsActive && dailyFocusSeconds > 0) {
-                     const d = new Date();
-                     const todayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                     setFocusHistory(prev => {
-                        const updated = { ...prev, [todayKey]: dailyFocusSeconds };
-                        localStorage.setItem('study_focus_history', JSON.stringify(updated));
-                        return updated;
-                    });
+                     const k = getTodayKey();
+                     setFocusHistory(p => { const u = { ...p, [k]: dailyFocusSeconds }; localStorage.setItem('study_focus_history', JSON.stringify(u)); return u; });
                 }
-            }, [pomoIsActive]); 
+            }, [pomoIsActive]);
 
+            // Timer logic (OPTIMIZED: setInterval instead of RAF for seconds)
+            React.useEffect(() => { const h = (e) => { e.preventDefault(); setInstallPrompt(e); }; window.addEventListener('beforeinstallprompt', h); return () => window.removeEventListener('beforeinstallprompt', h); }, []);
+            
+            // --- TIMER LOGIC FIX: SLEEP MODE ROBUSTNESS ---
             React.useEffect(() => {
-                const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
-                window.addEventListener('beforeinstallprompt', handler);
-                return () => window.removeEventListener('beforeinstallprompt', handler);
-            }, []);
-
-            React.useEffect(() => {
-                let interval = null;
-                if (pomoIsActive && pomoTime > 0) {
-                    interval = setInterval(() => {
-                        setPomoTime((prev) => {
-                            if (prev <= 1) return 0;
-                            return prev - 1;
-                        });
+                if (!pomoIsActive || pomoTime <= 0) return;
+                
+                const startTime = Date.now();
+                const initialTime = pomoTime;
+                let lastTick = Date.now();
+                
+                const intervalId = setInterval(() => {
+                    const now = Date.now();
+                    const secondsPassedTotal = Math.floor((now - startTime) / 1000);
+                    const remaining = Math.max(0, initialTime - secondsPassedTotal);
+                    
+                    const actualDelta = Math.floor((now - lastTick) / 1000);
+                    
+                    if (actualDelta > 0) {
+                        lastTick = now;
                         if (pomoMode === 'work') {
-                            setDailyFocusSeconds(prev => prev + 1);
+                            // Add stats based on elapsed time, clamped by remaining duration
+                            const previousElapsed = secondsPassedTotal - actualDelta;
+                            const previousRemaining = initialTime - previousElapsed;
+                            const secondsToAdd = Math.min(actualDelta, previousRemaining);
+                            
+                            if (secondsToAdd > 0) {
+                                setDailyFocusSeconds(p => p + secondsToAdd);
+                            }
                         }
-                    }, 1000);
-                }
-                return () => clearInterval(interval);
-            }, [pomoIsActive, pomoMode]);
-
-            React.useEffect(() => {
-                if (pomoTime === 0 && pomoIsActive) {
-                    setPomoIsActive(false);
-                    if (pomoMode === 'work') {
-                        setPomoMode('break');
-                        setPomoTime(pomoBreakDuration * 60);
-                    } else {
-                        setPomoMode('work');
-                        setPomoTime(pomoWorkDuration * 60);
                     }
-                }
-            }, [pomoTime, pomoIsActive, pomoMode, pomoBreakDuration, pomoWorkDuration]);
 
+                    if (remaining <= 0) {
+                        setPomoTime(0);
+                        setPomoIsActive(false);
+                        clearInterval(intervalId);
+                    } else {
+                        setPomoTime(remaining);
+                    }
+                }, 1000);
+
+                return () => clearInterval(intervalId);
+            }, [pomoIsActive, pomoMode]); // Note: pomoTime removed from deps to avoid reset loop, logic relies on initial capture
+
+            // Timer Reset Logic
             React.useEffect(() => {
-                let frameId;
-                const loop = () => {
-                    setStressLevel(prev => Math.max(0, prev * 0.98 - 0.1));
-                    setParticles(prevParts => {
-                        if (prevParts.length === 0) return [];
-                        return prevParts.map(p => ({
-                            ...p,
-                            x: p.x + p.vx,
-                            y: p.y + p.vy,
-                            vy: p.vy + 0.5, 
-                            rot: p.rot + p.vRot,
-                            life: p.life - 1
-                        })).filter(p => p.life > 0);
-                    });
-                    frameId = requestAnimationFrame(loop);
-                };
-                if (viewMode === 'pomodoro') {
-                    frameId = requestAnimationFrame(loop);
+                // Reset logic handled inside interval mostly, this handles manual resets or switch
+                if (pomoTime === 0 && !pomoIsActive) {
+                     // Auto switch handled by user usually, or here if we want auto-switch
+                     // Keeping user manual switch for now or simple toggle
+                     if (pomoMode === 'work') { setPomoMode('break'); setPomoTime(pomoBreakDuration * 60); } else { setPomoMode('work'); setPomoTime(pomoWorkDuration * 60); }
                 }
-                return () => cancelAnimationFrame(frameId);
-            }, [viewMode]);
+            }, [pomoTime, pomoIsActive]); // Minimal deps
 
+            // Particles loop (OPTIMIZED: Ref for stale closure fix)
+            React.useEffect(() => {
+                let frameId, isRunning = false;
+                const loop = () => {
+                    setStressLevel(p => { 
+                        // Use ref for current particles check to allow proper stop
+                        const n = Math.max(0, p * 0.98 - 0.1); 
+                        if (n < 0.01 && particlesRef.current.length === 0) { 
+                            isRunning = false; 
+                            return 0; 
+                        } 
+                        return n; 
+                    });
+                    setParticles(p => { 
+                        if (p.length === 0) return []; 
+                        return p.map(pt => ({ ...pt, x: pt.x + pt.vx, y: pt.y + pt.vy, vy: pt.vy + 0.5, rot: pt.rot + pt.vRot, life: pt.life - 1 })).filter(pt => pt.life > 0); 
+                    });
+                    if (isRunning) frameId = requestAnimationFrame(loop);
+                };
+                
+                // Start loop if needed
+                if (viewMode === 'pomodoro' && (stressLevel > 0.1 || particlesRef.current.length > 0)) { 
+                    isRunning = true; 
+                    frameId = requestAnimationFrame(loop); 
+                }
+                return () => { isRunning = false; cancelAnimationFrame(frameId); };
+            }, [viewMode, stressLevel > 0.1]); // Removed particles.length from deps to avoid re-subscribing on every particle change
 
-            // 3. HELPERS
-            const getActiveSubjectData = () => subjects.find(s => s.name === activeSubject);
-            const getActiveSubData = () => {
-                const subj = getActiveSubjectData();
-                if (!subj || !activeSubSubject) return null;
-                return subj.subSubjects.find(sub => sub.name === activeSubSubject);
+            const activeSubjectData = React.useMemo(() => subjects.find(s => s.name === activeSubject), [subjects, activeSubject]);
+            const activeData = React.useMemo(() => { if (!activeSubjectData || !activeSubSubject) return activeSubjectData; return activeSubjectData.subSubjects.find(s => s.name === activeSubSubject); }, [activeSubjectData, activeSubSubject]);
+            const calculateProgress = React.useCallback((sName, subName = null) => {
+                const s = subjects.find(x => x.name === sName); if (!s) return { completed: 0, total: 0 };
+                if (subName) { const sub = s.subSubjects.find(x => x.name === subName); return { completed: sub?.completed || 0, total: sub?.goal || 0 }; }
+                if (s.subSubjects?.length > 0) { let tg = 0, tc = 0; s.subSubjects.forEach(sub => { tg += (sub.goal || 0); tc += (sub.completed || 0); }); return { completed: tc + (s.completed || 0), total: tg + (s.goal || 0) }; }
+                return { completed: s.completed || 0, total: s.goal || 0 };
+            }, [subjects]);
+            const getDaysLeft = (dS) => { if (!dS) return null; const t = new Date(); t.setHours(0, 0, 0, 0); const e = new Date(dS); e.setHours(0, 0, 0, 0); return Math.ceil((e - t) / 86400000); };
+            const paceInfo = React.useMemo(() => {
+                const prog = activeSubSubject ? calculateProgress(activeSubject, activeSubSubject) : calculateProgress(activeSubject);
+                const remL = prog.total - prog.completed; const eD = activeData?.examDate; const buf = activeData?.bufferDays ?? 20; const ppl = activeData?.pagesPerLesson ?? 9;
+                if (!eD) return null; const dl = getDaysLeft(eD); if (dl === null) return null; const sd = dl - buf;
+                if (remL <= 0) return { type: 'success', msg: "Obiettivo Raggiunto!" }; if (sd <= 0) return { type: 'error', msg: `Mancano ${dl}gg. Impossibile anticipare di ${buf}gg.` };
+                const dL = remL / sd; return { type: 'info', pages: Math.ceil(dL * ppl), lessons: dL.toFixed(1), studyDays: sd, buffer: buf };
+            }, [activeData, activeSubject, activeSubSubject, calculateProgress]);
+            const allAppelli = React.useMemo(() => { const all = []; subjects.forEach(s => { if (s.appelli) s.appelli.forEach(a => all.push({ ...a, subject: s.name, color: s.color })); }); return all.sort((a, b) => new Date(a.date) - new Date(b.date)); }, [subjects]);
+            const filteredAppelli = React.useMemo(() => allAppelli.filter(a => a.subject === activeSubject), [allAppelli, activeSubject]);
+            const daysLeft = React.useMemo(() => activeData ? getDaysLeft(activeData.examDate) : null, [activeData]);
+            let daysColorClass = "text-slate-500 bg-slate-50 hover:bg-slate-100";
+            if (daysLeft !== null) { if (daysLeft < 0) daysColorClass = "text-slate-400 bg-slate-50 line-through opacity-60"; else if (daysLeft === 0) daysColorClass = "text-red-600 bg-red-50 font-bold border border-red-100 animate-pulse"; else if (daysLeft <= 3) daysColorClass = "text-red-600 bg-red-50 font-bold border border-red-100"; else if (daysLeft <= 7) daysColorClass = "text-orange-600 bg-orange-50 font-bold border border-orange-100"; else daysColorClass = "text-blue-600 bg-blue-50 font-bold border border-blue-100"; }
+            const filteredItems = React.useMemo(() => { const q = searchQuery.trim().toLowerCase(); if (!q) return items.filter(i => i.subject === activeSubject && (activeSubSubject ? i.subSubject === activeSubSubject : true)); const sp = q.indexOf(' '); if (sp !== -1) { const sName = q.substring(0, sp); const rQ = q.substring(sp + 1); const mS = subjects.find(s => s.name.toLowerCase() === sName); if (mS) return items.filter(i => i.subject === mS.name && i.title.toLowerCase().includes(rQ)); } return items.filter(i => i.subject === activeSubject && i.title.toLowerCase().includes(q)); }, [items, activeSubject, activeSubSubject, searchQuery, subjects]);
+            const isBreak = pomoMode === 'break'; const totalDuration = isBreak ? pomoBreakDuration * 60 : pomoWorkDuration * 60; const progress = (totalDuration - pomoTime);
+            const shakeX = Math.sin(Date.now() / 20) * (stressLevel / 10); const shakeY = Math.cos(Date.now() / 30) * (stressLevel / 10); const rotate = Math.sin(Date.now() / 40) * (stressLevel / 20); const scale = 1 + Math.sin(Date.now() / 60) * (stressLevel / 400); const containerStyle = { transform: `translate(${shakeX}px, ${shakeY}px) rotate(${rotate}deg) scale(${scale})`, filter: `saturate(${100 + stressLevel}%)` }; const bgClass = viewMode === 'pomodoro' ? (isBreak ? 'bg-emerald-50 text-emerald-900' : 'bg-orange-50 text-orange-900') : 'bg-[#f8f9fa] text-slate-800';
+            const handleAntiStress = (e) => { 
+                setStressLevel(p => Math.min(p + 7, 100)); 
+                setIsSquishing(true); 
+                setTimeout(() => setIsSquishing(false), 150); 
+                setTotalSquishCount(p => p + 1); 
+                const r = e.currentTarget.getBoundingClientRect(); const cx = r.left + r.width / 2; const cy = r.top + r.height / 2; 
+                // OPTIMIZED: Reduced particles count
+                const nP = Array.from({ length: 6 }).map(() => ({ id: Math.random(), x: cx, y: cy, vx: (Math.random() - 0.5) * 30, vy: (Math.random() - 1) * 30 - 10, rot: Math.random() * 360, vRot: (Math.random() - 0.5) * 40, scale: 0.5 + Math.random() * 1.2, life: 150 })); 
+                setParticles(p => { 
+                    const c = [...p, ...nP]; 
+                    // OPTIMIZED: Max 25 particles
+                    return c.length > 25 ? c.slice(-25) : c; 
+                }); 
             };
-
-            const activeSubjectData = getActiveSubjectData();
-            const activeData = activeSubSubject ? getActiveSubData() : getActiveSubjectData();
-            
-            const calculateProgress = (subjectName, subName = null) => { const subjData = subjects.find(s => s.name === subjectName); if (!subjData) return { completed: 0, total: 0 }; if (subName) { const subData = subjData.subSubjects.find(s => s.name === subName); return { completed: subData?.completed || 0, total: subData?.goal || 0 }; } else { if (subjData.subSubjects && subjData.subSubjects.length > 0) { let totalGoal = 0; let totalCompleted = 0; subjData.subSubjects.forEach(sub => { totalGoal += (sub.goal || 0); totalCompleted += (sub.completed || 0); }); totalGoal += (subjData.goal || 0); totalCompleted += (subjData.completed || 0); return { completed: totalCompleted, total: totalGoal }; } else { return { completed: subjData.completed || 0, total: subjData.goal || 0 }; } } };
-            const getDaysLeft = (dateString) => { if (!dateString) return null; const today = new Date(); today.setHours(0, 0, 0, 0); const exam = new Date(dateString); exam.setHours(0, 0, 0, 0); const diffTime = exam - today; return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); };
-            const calculatePace = (remainingLessons, examDate, bufferDays = 20, pagesPerLesson = 9) => { if (!examDate) return null; const days = getDaysLeft(examDate); if (days === null) return null; const studyDays = days - bufferDays; if (remainingLessons <= 0) return { type: 'success', msg: "Obiettivo Raggiunto!" }; if (studyDays <= 0) return { type: 'error', msg: `Mancano ${days}gg. Impossibile anticipare di ${bufferDays}gg.` }; const dailyLessons = remainingLessons / studyDays; const dailyPages = Math.ceil(dailyLessons * pagesPerLesson); return { type: 'info', pages: dailyPages, lessons: dailyLessons.toFixed(1), studyDays: studyDays, buffer: bufferDays }; };
-            
-            const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-            const getFirstDayOfMonth = (date) => { const day = new Date(date.getFullYear(), date.getMonth(), 1).getDay(); return day === 0 ? 6 : day - 1; };
-            const getAllAppelli = () => { const all = []; subjects.forEach(s => { if (s.appelli) s.appelli.forEach(a => all.push({ ...a, subject: s.name, color: s.color })); }); return all.sort((a, b) => new Date(a.date) - new Date(b.date)); };
-
-            const formatPomoTime = (seconds) => { const m = Math.floor(seconds / 60); const s = seconds % 60; return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; };
-            const formatSquishCount = (n) => { if (n < 1000) return n; if (n < 1000000) return (n / 1000).toFixed(1).replace('.0', '') + 'k'; return (n / 1000000).toFixed(1).replace('.0', '') + 'M'; };
-            const formatDate = (iso) => new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', year: '2-digit' }).format(new Date(iso));
-
-            const handleJumpToNextAppello = () => { const all = getAllAppelli(); const today = new Date(); today.setHours(0,0,0,0); const upcoming = all.filter(a => new Date(a.date) >= today); if (upcoming.length === 0) return; let nextIndex = lastJumpIndex + 1; if (nextIndex >= upcoming.length) nextIndex = 0; setLastJumpIndex(nextIndex); const target = upcoming[nextIndex]; if (target) setCalDate(new Date(target.date)); };
-            const handleAntiStress = (e) => { setStressLevel(prev => Math.min(prev + 7, 100)); setIsSquishing(true); setTimeout(() => setIsSquishing(false), 150); setTotalSquishCount(prev => prev + 1); const rect = e.currentTarget.getBoundingClientRect(); const centerX = rect.left + rect.width / 2; const centerY = rect.top + rect.height / 2; const newParticles = Array.from({ length: 12 }).map(() => ({ id: Math.random(), x: centerX, y: centerY, vx: (Math.random() - 0.5) * 30, vy: (Math.random() - 1) * 30 - 10, rot: Math.random() * 360, vRot: (Math.random() - 0.5) * 40, scale: 0.5 + Math.random() * 1.2, life: 150 })); setParticles(prev => [...prev, ...newParticles]); };
-            const handleInstall = () => { if (installPrompt) { installPrompt.prompt(); installPrompt.userChoice.then((choice) => { if (choice.outcome === 'accepted') setInstallPrompt(null); }); } };
             
             const handleExportData = () => { 
-                const data = { 
-                    subjects: JSON.parse(localStorage.getItem('study_subjects') || '[]'), 
-                    items: JSON.parse(localStorage.getItem('study_items') || '[]'),
-                    focusHistory: JSON.parse(localStorage.getItem('study_focus_history') || '{}'),
-                    totalSquishCount: parseInt(localStorage.getItem('total_squish_count') || '0'),
-                    scratchpadNote: localStorage.getItem('study_scratchpad') || '',
-                    timestamp: new Date().toISOString() 
-                }; 
-                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}); 
-                const url = URL.createObjectURL(blob); 
-                const a = document.createElement('a'); 
-                a.href = url; 
-                a.download = `studylog_backup.json`; 
-                document.body.appendChild(a); 
-                a.click(); 
-                document.body.removeChild(a); 
-                URL.revokeObjectURL(url); 
-            };
-
-            const handleImportData = (e) => { 
-                const file = e.target.files[0]; 
-                if (!file) return; 
-                const reader = new FileReader(); 
-                reader.onload = (event) => { 
-                    try { 
-                        const importedData = JSON.parse(event.target.result); 
-                        if (importedData.subjects) setSubjects(importedData.subjects); 
-                        if (importedData.items) setItems(importedData.items); 
-                        if (importedData.focusHistory) {
-                            setFocusHistory(importedData.focusHistory);
-                            localStorage.setItem('study_focus_history', JSON.stringify(importedData.focusHistory));
-                            const d = new Date();
-                            const todayKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                            if (importedData.focusHistory[todayKey]) setDailyFocusSeconds(importedData.focusHistory[todayKey]);
-                        }
-                        if (importedData.totalSquishCount !== undefined) setTotalSquishCount(importedData.totalSquishCount);
-                        if (importedData.scratchpadNote !== undefined) setScratchpadNote(importedData.scratchpadNote);
-                        e.target.value = ''; 
-                    } catch (error) { 
-                        console.error("Errore import:", error); 
-                        alert("File non valido.");
-                    } 
-                }; 
-                reader.readAsText(file); 
-            };
-
-            const handleOpenCalendar = () => {
-                setLastJumpIndex(-1);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const all = getAllAppelli();
-                const upcoming = all.filter(a => new Date(a.date) >= today);
-                if (upcoming.length > 0) setCalDate(new Date(upcoming[0].date));
-                else setCalDate(new Date());
-                setIsGlobalCalendarOpen(true);
-            };
-
-            const switchView = (mode) => {
-                if (transitionState !== 'idle') return;
-                let colorClass = 'bg-blue-vibrant';
-                if (mode === 'pomodoro') colorClass = pomoMode === 'break' ? 'bg-emerald-vibrant' : 'bg-orange-vibrant';
-                else colorClass = 'bg-blue-vibrant';
+                const d = { subjects, items, focusHistory, totalSquishCount, scratchpadNote, devScoreOffset, timestamp: new Date().toISOString() }; 
+                const b = new Blob([JSON.stringify(d, null, 2)], {type: 'application/json'}); 
+                const u = URL.createObjectURL(b); 
+                const a = document.createElement('a'); a.href = u; a.download = `studylog_backup.json`; 
+                document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u); 
                 
-                setTransitionColor(colorClass);
-                setTargetView(mode);
-                setTransitionState('expanding');
-                setTimeout(() => {
-                    setViewMode(mode);
-                    setTransitionState('fading');
-                    setTimeout(() => {
-                        setTransitionState('idle');
-                        setTargetView(null);
-                    }, 1000);
-                }, 600);
+                // Update last backup time
+                localStorage.setItem('study_last_backup', Date.now().toString());
+                setShowBackupReminder(false);
             };
 
-            const getWeeklyData = () => {
-                const days = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-                const data = [];
-                const today = new Date();
-                for (let i = 6; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(today.getDate() - i);
-                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                    const seconds = focusHistory[key] || 0;
-                    data.push({
-                        day: days[d.getDay()],
-                        fullDate: key,
-                        minutes: Math.round(seconds / 60),
-                        hours: (seconds / 3600).toFixed(1)
-                    });
+            const handleImportData = (e) => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = (evt) => { try { const d = JSON.parse(evt.target.result); if (d.subjects) setSubjects(d.subjects); if (d.items) setItems(d.items); if (d.focusHistory) { setFocusHistory(d.focusHistory); localStorage.setItem('study_focus_history', JSON.stringify(d.focusHistory)); const k = getTodayKey(); if (d.focusHistory[k]) setDailyFocusSeconds(d.focusHistory[k]); } if (d.totalSquishCount !== undefined) setTotalSquishCount(d.totalSquishCount); if (d.scratchpadNote !== undefined) setScratchpadNote(d.scratchpadNote); if (d.devScoreOffset !== undefined) setDevScoreOffset(d.devScoreOffset); e.target.value = ''; } catch (err) { alert("File non valido."); } }; r.readAsText(f); };
+            const handleOpenCalendar = () => { setLastJumpIndex(-1); const today = new Date(); today.setHours(0, 0, 0, 0); const upcoming = allAppelli.filter(a => new Date(a.date) >= today); if (upcoming.length > 0) setCalDate(new Date(upcoming[0].date)); else setCalDate(new Date()); setIsGlobalCalendarOpen(true); };
+            
+            // --- CALENDAR JUMP HANDLER WRAPPER (FIXED HIGHLIGHT) ---
+            const jumpToNextAppello = () => {
+                const today = new Date(); today.setHours(0,0,0,0);
+                const upcoming = allAppelli.filter(a => new Date(a.date) >= today);
+                const nextIndex = handleJumpToNextAppello(upcoming, lastJumpIndex);
+                if (nextIndex !== -1) {
+                    setLastJumpIndex(nextIndex);
+                    const target = upcoming[nextIndex];
+                    if (target) {
+                        setCalDate(new Date(target.date));
+                        // Set highlight id and clear it after 3 seconds
+                        setHighlightedAppelloId(target.id);
+                        setTimeout(() => setHighlightedAppelloId(null), 3000);
+                    }
                 }
-                return data;
             };
-
-            const getMonthlyData = (targetDate) => {
-                const currentMonth = targetDate.getMonth();
-                const currentYear = targetDate.getFullYear();
-                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-                const weeks = [0, 0, 0, 0, 0]; 
-                
-                for (let d = 1; d <= daysInMonth; d++) {
-                    const dateObj = new Date(currentYear, currentMonth, d);
-                    const y = dateObj.getFullYear();
-                    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-                    const day = String(dateObj.getDate()).padStart(2, '0');
-                    const key = `${y}-${m}-${day}`;
-                    const seconds = focusHistory[key] || 0;
-                    const weekIndex = Math.floor((d - 1) / 7);
-                    if (weekIndex < 5) weeks[weekIndex] += seconds;
-                }
-                return weeks.map((sec, i) => ({
-                    label: `Sett ${i + 1}`,
-                    minutes: Math.round(sec / 60),
-                    hours: (sec / 3600).toFixed(1)
-                }));
-            };
-
-            const safeWeeklyData = getWeeklyData();
-            const safeMonthlyData = getMonthlyData(reportDate);
-
+            
             const openAddModal = () => { if (!activeSubject) return; setNewItemSubSubject(activeSubSubject || ''); setNewItemDate(new Date().toISOString().split('T')[0]); setNewItemTitle(''); setIsAddModalOpen(true); };
-            const openGoalModal = () => { const d = activeSubSubject ? getActiveSubData() : getActiveSubjectData(); setNewGoalValue(d?.goal || 0); setNewPagesPerLesson(d?.pagesPerLesson || 9); setIsGoalModalOpen(true); };
-            const openNoteModal = () => { const d = activeSubSubject ? getActiveSubData() : getActiveSubjectData(); setNewNoteValue(d?.notes || ''); setIsNoteModalOpen(true); };
-            const openExamModal = () => { const d = activeSubSubject ? getActiveSubData() : getActiveSubjectData(); setNewExamDate(d?.examDate || ''); setNewBufferDays(d?.bufferDays !== undefined ? d.bufferDays : 20); setIsExamModalOpen(true); };
+            const openGoalModal = () => { setNewGoalValue(activeData?.goal || 0); setNewPagesPerLesson(activeData?.pagesPerLesson || 9); setIsGoalModalOpen(true); };
+            const openNoteModal = () => { setNewNoteValue(activeData?.notes || ''); setIsNoteModalOpen(true); };
+            const openExamModal = () => { setNewExamDate(activeData?.examDate || ''); setNewBufferDays(activeData?.bufferDays !== undefined ? activeData.bufferDays : 20); setIsExamModalOpen(true); };
+            const handleSwitchView = (m) => { if (transitionState !== 'idle') return; setTransitionColor(m === 'pomodoro' ? (pomoMode === 'break' ? 'bg-emerald-vibrant' : 'bg-orange-vibrant') : 'bg-blue-vibrant'); setTargetView(m); setTransitionState('expanding'); setTimeout(() => { setViewMode(m); setTransitionState('fading'); setTimeout(() => { setTransitionState('idle'); setTargetView(null); }, 1000); }, 600); };
+            const safeWeeklyData = React.useMemo(() => { const days = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab']; const d = []; const t = new Date(); for (let i = 6; i >= 0; i--) { const dt = new Date(); dt.setDate(t.getDate() - i); const k = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`; const s = focusHistory[k] || 0; d.push({ day: days[dt.getDay()], fullDate: k, minutes: Math.round(s / 60), hours: (s / 3600).toFixed(1) }); } return d; }, [focusHistory]);
+            const safeMonthlyData = React.useMemo(() => { const cm = reportDate.getMonth(); const cy = reportDate.getFullYear(); const dim = new Date(cy, cm + 1, 0).getDate(); const w = [0, 0, 0, 0, 0]; for (let d = 1; d <= dim; d++) { const dt = new Date(cy, cm, d); const k = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`; const s = focusHistory[k] || 0; const wi = Math.floor((d - 1) / 7); if (wi < 5) w[wi] += s; } return w.map((s, i) => ({ label: `Sett ${i + 1}`, minutes: Math.round(s / 60), hours: (s / 3600).toFixed(1) })); }, [focusHistory, reportDate]);
+            const handleAddSubject = (e) => { e.preventDefault(); if (!newSubjectName.trim() || subjects.find(s => s.name === newSubjectName)) return; setSubjects([...subjects, { name: newSubjectName, goal: 0, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9, appelli: [], color: SUBJECT_COLORS[Math.floor(Math.random()*SUBJECT_COLORS.length)], isOpen: true, subSubjects: [] }]); setActiveSubject(newSubjectName); setNewSubjectName(''); setIsSubjectModalOpen(false); };
+            const handleAddSubSubject = (e) => { e.preventDefault(); if (!newSubSubjectName.trim()) return; setSubjects(subjects.map(s => s.name === targetSubjectForSub ? {...s, subSubjects: [...s.subSubjects, {name: newSubSubjectName, goal: 0, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9}]} : s)); setNewSubSubjectName(''); setIsSubSubjectModalOpen(false); };
+            const handleAddItem = (e) => { e.preventDefault(); if (!newItemTitle.trim()) return; const d = new Date(newItemDate); if (d.toDateString() === new Date().toDateString()) d.setHours(new Date().getHours(), new Date().getMinutes()); else d.setHours(12,0,0); setItems([{id: Date.now().toString(), title: newItemTitle, type: newItemType, subject: activeSubject, subSubject: newItemSubSubject, createdAt: d.toISOString()}, ...items]); setIsAddModalOpen(false); };
+            const handleAddAppello = (e) => { e.preventDefault(); if(!newAppelloDate) return; setSubjects(subjects.map(s => s.name === activeSubject ? {...s, appelli: [...(s.appelli||[]), {id: Date.now(), date: newAppelloDate, note: newAppelloNote}]} : s)); setNewAppelloDate(''); setNewAppelloNote(''); setIsAppelloModalOpen(false); };
             const handleUpdateGoal = (e) => { e.preventDefault(); const v = parseInt(newGoalValue)||0; const p = parseInt(newPagesPerLesson)||9; setSubjects(subjects.map(s => s.name === activeSubject ? (activeSubSubject ? {...s, subSubjects: s.subSubjects.map(sub => sub.name === activeSubSubject ? {...sub, goal: v, pagesPerLesson: p} : sub)} : {...s, goal: v, pagesPerLesson: p}) : s)); setIsGoalModalOpen(false); };
             const handleUpdateNote = (e) => { e.preventDefault(); setSubjects(subjects.map(s => s.name === activeSubject ? (activeSubSubject ? {...s, subSubjects: s.subSubjects.map(sub => sub.name === activeSubSubject ? {...sub, notes: newNoteValue} : sub)} : {...s, notes: newNoteValue}) : s)); setIsNoteModalOpen(false); };
             const handleUpdateExamDate = (e) => { e.preventDefault(); const b = parseInt(newBufferDays)||0; setSubjects(subjects.map(s => s.name === activeSubject ? {...s, examDate: newExamDate, bufferDays: b, subSubjects: s.subSubjects.map(sub => ({...sub, examDate: newExamDate, bufferDays: b}))} : s)); setIsExamModalOpen(false); };
             const handleIncrementLessons = () => { if (!activeSubject) return; setSubjects(subjects.map(s => s.name === activeSubject ? (activeSubSubject ? {...s, subSubjects: s.subSubjects.map(sub => sub.name === activeSubSubject ? {...sub, completed: (sub.completed||0)+1} : sub)} : {...s, completed: (s.completed||0)+1}) : s)); };
             const handleDecrementLessons = () => { if (!activeSubject) return; setSubjects(subjects.map(s => s.name === activeSubject ? (activeSubSubject ? {...s, subSubjects: s.subSubjects.map(sub => sub.name === activeSubSubject ? {...sub, completed: Math.max(0,(sub.completed||0)-1)} : sub)} : {...s, completed: Math.max(0,(s.completed||0)-1)}) : s)); };
-            const handleAddSubject = (e) => { e.preventDefault(); if (!newSubjectName.trim() || subjects.find(s => s.name === newSubjectName)) return; setSubjects([...subjects, { name: newSubjectName, goal: 0, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9, appelli: [], color: SUBJECT_COLORS[Math.floor(Math.random()*SUBJECT_COLORS.length)], isOpen: true, subSubjects: [] }]); setActiveSubject(newSubjectName); setNewSubjectName(''); setIsSubjectModalOpen(false); };
-            const handleAddSubSubject = (e) => { e.preventDefault(); if (!newSubSubjectName.trim()) return; setSubjects(subjects.map(s => s.name === targetSubjectForSub ? {...s, subSubjects: [...s.subSubjects, {name: newSubSubjectName, goal: 0, completed: 0, notes: '', examDate: null, bufferDays: 20, pagesPerLesson: 9}]} : s)); setNewSubSubjectName(''); setIsSubSubjectModalOpen(false); };
-            const handleAddItem = (e) => { e.preventDefault(); if (!newItemTitle.trim()) return; const d = new Date(newItemDate); if (d.toDateString() === new Date().toDateString()) d.setHours(new Date().getHours(), new Date().getMinutes()); else d.setHours(12,0,0); setItems([{id: Date.now().toString(), title: newItemTitle, type: newItemType, subject: activeSubject, subSubject: newItemSubSubject, createdAt: d.toISOString()}, ...items]); setIsAddModalOpen(false); };
-            const handleAddAppello = (e) => { e.preventDefault(); if(!newAppelloDate) return; setSubjects(subjects.map(s => s.name === activeSubject ? {...s, appelli: [...(s.appelli||[]), {id: Date.now(), date: newAppelloDate, note: newAppelloNote}]} : s)); setNewAppelloDate(''); setNewAppelloNote(''); setIsAppelloModalOpen(false); };
             const requestDelete = (type, data) => setDeleteConfig({ isOpen: true, type, data });
             const confirmDelete = () => { const { type, data } = deleteConfig; if (type === 'subject') { setSubjects(subjects.filter(s => s.name !== data)); setItems(items.filter(i => i.subject !== data)); if (activeSubject === data) setActiveSubject(''); } else if (type === 'subSubject') { setSubjects(subjects.map(s => s.name === data.subjectName ? {...s, subSubjects: s.subSubjects.filter(sub => sub.name !== data.subName)} : s)); setItems(items.filter(i => !(i.subject === data.subjectName && i.subSubject === data.subName))); } else if (type === 'item') { setItems(items.filter(i => i.id !== data)); } else if (type === 'appello') { setSubjects(subjects.map(s => s.name === activeSubject ? {...s, appelli: s.appelli.filter(a => a.id !== data)} : s)); } setDeleteConfig({ isOpen: false, type: null, data: null }); };
 
-            // --- DERIVED STATE (RENDER PHASE) ---
-            const mainProgress = activeSubject ? calculateProgress(activeSubject) : { completed: 0, total: 0 };
-            const subProgress = activeSubSubject ? calculateProgress(activeSubject, activeSubSubject) : null;
-            const currentProgressForPace = activeSubSubject ? subProgress : mainProgress;
-            const currentExamDate = activeData?.examDate;
-            const currentBuffer = activeData?.bufferDays !== undefined ? activeData.bufferDays : 20;
-            const currentPagesPerLesson = activeData?.pagesPerLesson !== undefined ? activeData.pagesPerLesson : 9;
-            
-            const paceInfo = activeData ? calculatePace(currentProgressForPace.total - currentProgressForPace.completed, currentExamDate, currentBuffer, currentPagesPerLesson) : null;
-            const daysLeft = activeData ? getDaysLeft(activeData.examDate) : null;
-            const sortedAppelli = activeSubjectData?.appelli ? [...activeSubjectData.appelli].sort((a, b) => new Date(a.date) - new Date(b.date)) : [];
-
-            let daysColorClass = "text-slate-500 bg-slate-50 hover:bg-slate-100";
-            if (daysLeft !== null) { if (daysLeft < 0) daysColorClass = "text-slate-400 bg-slate-50 line-through opacity-60"; else if (daysLeft === 0) daysColorClass = "text-red-600 bg-red-50 font-bold border border-red-100 animate-pulse"; else if (daysLeft <= 3) daysColorClass = "text-red-600 bg-red-50 font-bold border border-red-100"; else if (daysLeft <= 7) daysColorClass = "text-orange-600 bg-orange-50 font-bold border border-orange-100"; else daysColorClass = "text-blue-600 bg-blue-50 font-bold border border-blue-100"; }
-            
-            const filteredItems = React.useMemo(() => { const query = searchQuery.trim(); if (!query) return items.filter(item => { const matchSubject = item.subject === activeSubject; const matchSub = activeSubSubject ? item.subSubject === activeSubSubject : true; return matchSubject && matchSub; }); const firstSpaceIndex = query.indexOf(' '); if (firstSpaceIndex !== -1) { const possibleSubject = query.substring(0, firstSpaceIndex).toLowerCase(); const restOfQuery = query.substring(firstSpaceIndex + 1).toLowerCase(); const matchedSubject = subjects.find(s => s.name.toLowerCase() === possibleSubject); if (matchedSubject) return items.filter(item => item.subject === matchedSubject.name && item.title.toLowerCase().includes(restOfQuery)); } return items.filter(item => { const matchSubject = item.subject === activeSubject; const matchTitle = item.title.toLowerCase().includes(query.toLowerCase()); return matchSubject && matchTitle; }); }, [items, activeSubject, activeSubSubject, searchQuery, subjects]);
-
-            // Pomodoro Render Vars
-            const isBreak = pomoMode === 'break';
-            const totalDuration = isBreak ? pomoBreakDuration * 60 : pomoWorkDuration * 60;
-            const progress = (totalDuration - pomoTime);
-            const shakeX = Math.sin(Date.now() / 20) * (stressLevel / 10);
-            const shakeY = Math.cos(Date.now() / 30) * (stressLevel / 10);
-            const rotate = Math.sin(Date.now() / 40) * (stressLevel / 20);
-            const scale = 1 + Math.sin(Date.now() / 60) * (stressLevel / 400);
-            const containerStyle = { transform: `translate(${shakeX}px, ${shakeY}px) rotate(${rotate}deg) scale(${scale})`, filter: `saturate(${100 + stressLevel}%)` };
-            
-            let bgClass = 'bg-[#f8f9fa]';
-            if (viewMode === 'pomodoro') {
-                bgClass = isBreak ? 'bg-emerald-50 text-emerald-900' : 'bg-orange-50 text-orange-900';
-            } else {
-                bgClass = 'bg-[#f8f9fa] text-slate-800';
-            }
+            // Calculate dynamic style for the "greenhouse"
+            const cardStyle = {
+                 '--glow-color': streakData.currentRank.glow
+            };
 
             return (
                 <div className={`min-h-screen font-sans relative overflow-hidden color-transition ${bgClass}`}>
-                    
-                    {/* --- LIQUID TRANSITION OVERLAY --- */}
-                    {transitionState !== 'idle' && (
-                        <div className={`liquid-overlay liquid-state-${transitionState}`}>
-                            <div className={`liquid-backdrop ${transitionState === 'expanding' ? 'opacity-100 backdrop-blur-3xl' : 'opacity-0 backdrop-blur-0'}`}></div>
-                            <div className={`liquid-blob ${transitionColor} ${transitionState === 'expanding' ? 'liquid-anim-expanding' : 'liquid-anim-fading'}`}></div>
-                            <div className="morph-container">
-                                {targetView === 'pomodoro' ? (
-                                    <>
-                                        <div className="absolute text-blue-600 animate-surrender top-1/2 left-1/2"><FileText size={48} /></div>
-                                        <div className={`absolute animate-overpower icon-glow top-1/2 left-1/2 ${pomoMode === 'break' ? 'text-emerald-500' : 'text-orange-600'}`}>
-                                            <TomatoIcon size={72} color="currentColor" />
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className={`absolute animate-surrender top-1/2 left-1/2 ${pomoMode === 'break' ? 'text-emerald-500' : 'text-orange-600'}`}>
-                                            <TomatoIcon size={48} color="currentColor" />
-                                        </div>
-                                        <div className="absolute text-blue-600 animate-overpower icon-glow top-1/2 left-1/2"><FileText size={72} /></div>
-                                    </>
-                                )}
+                    {/* POPUP LINFA */}
+                    <div className="fixed top-0 inset-x-0 z-[100] pointer-events-none flex flex-col items-center pt-6">
+                        {linfaPopups.map(popup => (
+                            <div key={popup.id} className="animate-toast bg-white/95 backdrop-blur-md border border-slate-100 text-slate-700 px-5 py-2.5 rounded-full shadow-xl flex items-center gap-3">
+                                <Droplets size={18} className="text-blue-500 fill-blue-500" />
+                                <span className="font-bold text-sm tracking-wide">+{popup.amount} Linfa</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* BACKUP REMINDER MODAL */}
+                    {showBackupReminder && (
+                        <div className="fixed bottom-20 right-6 z-[100] max-w-xs animate-pop-in">
+                            <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex flex-col gap-3 relative">
+                                <button onClick={() => setShowBackupReminder(false)} className="absolute top-2 right-2 text-slate-400 hover:text-white"><X size={16} /></button>
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-orange-500 p-2 rounded-lg animate-pulse"><Save size={20} /></div>
+                                    <div>
+                                        <h4 className="font-bold text-sm">Salva i tuoi progressi!</h4>
+                                        <p className="text-[10px] text-slate-300 mt-0.5">È passato un po' dall'ultimo backup.</p>
+                                    </div>
+                                </div>
+                                <button onClick={handleExportData} className="w-full py-2 bg-white text-slate-900 rounded-xl text-xs font-bold hover:bg-slate-100 transition-colors">Scarica Backup</button>
                             </div>
                         </div>
                     )}
 
-                    {/* --- POMODORO VIEW (ORANGE) --- */}
+                    {/* MODALE CELEBRATIVO */}
+                    {showCelebration && (
+                        <CelebrationModal 
+                            milestone={showCelebration} 
+                            onClose={() => setShowCelebration(null)} 
+                        />
+                    )}
+
+                    {transitionState !== 'idle' && (<div className={`liquid-overlay liquid-state-${transitionState}`}><div className={`liquid-backdrop ${transitionState === 'expanding' ? 'opacity-100 backdrop-blur-3xl' : 'opacity-0 backdrop-blur-0'}`}></div><div className={`liquid-blob ${transitionColor} ${transitionState === 'expanding' ? 'liquid-anim-expanding' : 'liquid-anim-fading'}`}></div><div className="morph-container">{targetView === 'pomodoro' ? (<><div className="absolute text-blue-600 animate-surrender top-1/2 left-1/2"><FileText size={48} /></div><div className={`absolute animate-overpower icon-glow top-1/2 left-1/2 ${pomoMode === 'break' ? 'text-emerald-500' : 'text-orange-600'}`}><TomatoIcon size={72} color="currentColor" /></div></>) : (<><div className={`absolute animate-surrender top-1/2 left-1/2 ${pomoMode === 'break' ? 'text-emerald-500' : 'text-orange-600'}`}><TomatoIcon size={48} color="currentColor" /></div><div className="absolute text-blue-600 animate-overpower icon-glow top-1/2 left-1/2"><FileText size={72} /></div></>)}</div></div>)}
+
                     {viewMode === 'pomodoro' && (
                         <div className={`absolute inset-0 z-20 flex flex-col items-center justify-center ${isBreak ? 'bg-emerald-50 text-emerald-900' : 'bg-orange-50 text-orange-900'}`} style={containerStyle}>
                              <div className="absolute top-6 left-6 z-20 group">
-                                 <button onClick={() => switchView('study')} disabled={transitionState !== 'idle'} className={`flex items-center gap-2 bg-white/80 backdrop-blur p-3 rounded-2xl shadow-xl hover:scale-105 transition-all ${transitionState !== 'idle' ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                 <button onClick={() => handleSwitchView('study')} disabled={transitionState !== 'idle'} className={`flex items-center gap-2 bg-white/80 backdrop-blur p-3 rounded-2xl shadow-xl hover:scale-105 transition-all ${transitionState !== 'idle' ? 'opacity-50 cursor-not-allowed' : ''}`}>
                                     {isBreak ? <TomatoIcon size={28} color="#10b981" className="animate-logo-float" /> : <TomatoIcon size={28} color="#ea580c" className="animate-logo-float" />}
                                     <span className="font-bold text-lg hidden md:inline">StudyLog</span>
                                 </button>
-                                <p className="text-xs font-bold uppercase tracking-wider mt-2 ml-2 opacity-0 group-hover:opacity-60 transition-opacity">Clicca per Registro</p>
                             </div>
                             
-                            <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-2">
+                            <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-2 group">
                                 <div className="flex items-center gap-2">
                                     <button onClick={() => setIsScratchpadOpen(true)} className="p-3 bg-white/80 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all text-slate-600 hover:text-orange-600"><Edit2 size={24} /></button>
                                     <button onClick={() => setIsPomoSettingsOpen(true)} className="p-3 bg-white/80 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all"><Settings size={24} className={isBreak ? "text-emerald-600" : "text-orange-600"} /></button>
                                 </div>
                                 <div onClick={() => setIsReportsOpen(true)} className="bg-white/80 backdrop-blur px-3 py-1.5 rounded-xl shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-white hover:scale-105 transition-all">Oggi: {Math.floor(dailyFocusSeconds / 60)} min</div>
-                                <div className="bg-white/80 backdrop-blur px-3 py-1.5 rounded-xl shadow-md text-xs font-bold uppercase tracking-wider flex items-center gap-1 text-amber-600"><Zap size={12} fill="currentColor" /> Squish: {formatSquishCount(totalSquishCount)}</div>
+                                
+                                <div className="flex flex-col items-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out transform translate-x-12 group-hover:translate-x-0 pointer-events-none group-hover:pointer-events-auto">
+                                    <div className="bg-white/80 backdrop-blur px-3 py-1.5 rounded-xl shadow-md text-xs font-bold uppercase tracking-wider flex items-center gap-1 text-amber-600"><Zap size={12} fill="currentColor" /> Squish: {totalSquishCount > 1000 ? (totalSquishCount/1000).toFixed(1) + 'k' : totalSquishCount}</div>
+                                    <button onClick={() => setIsAchievementsOpen(true)} className="bg-white/80 backdrop-blur px-3 py-1.5 rounded-xl shadow-md text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-white transition-colors flex items-center gap-1 border border-slate-100">
+                                        GIARDINO
+                                    </button>
+                                </div>
                             </div>
-                            
+
                             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                                  <TomatoIcon size={120} color={isBreak ? "#34d399" : "#fb923c"} className="absolute top-1/4 left-1/4 opacity-20 animate-float-fast color-transition" />
                                  <TomatoIcon size={80} color={isBreak ? "#34d399" : "#fb923c"} className="absolute bottom-1/4 right-1/4 opacity-20 animate-logo-float color-transition" />
-                                 {particles.map(p => (<div key={p.id} style={{ position: 'absolute', left: p.x, top: p.y, transform: `translate(-50%, -50%) rotate(${p.rot}deg) scale(${p.scale})`, pointerEvents: 'none' }}><TomatoIcon size={40} color={isBreak ? "#34d399" : "#fb923c"} /></div>))}
+                                 {particles.map(p => (<div key={p.id} style={{ position: 'absolute', left: p.x, top: p.y, transform: `translate(-50%, -50%) rotate(${p.rot}deg) scale(${p.scale})`, pointerEvents: 'none', willChange: 'transform' }}><TomatoIcon size={40} color={isBreak ? "#34d399" : "#fb923c"} /></div>))}
                             </div>
-                            
                             <div className="relative z-10 flex flex-col items-center gap-8 animate-in zoom-in-95 duration-500">
                                 <div className="relative">
-                                    <ProgressCircle completed={progress} total={totalDuration} size={320} stroke={12} color={isBreak ? "text-emerald-500" : "text-orange-500"} showText={false}>
+                                    <ProgressCircle 
+                                        completed={progress} 
+                                        total={totalDuration} 
+                                        size={320} 
+                                        stroke={12} 
+                                        color={isBreak ? "text-emerald-500" : "text-orange-500"} 
+                                        trackColor={isBreak ? "text-emerald-200" : "text-orange-200"}
+                                        showText={false}
+                                    >
                                         <div className="flex flex-col items-center gap-2">
-                                            <span className={`text-7xl font-black tracking-tighter tabular-nums color-transition ${isBreak ? 'text-emerald-700' : 'text-orange-700'}`}>{formatPomoTime(pomoTime)}</span>
+                                            <span className={`text-7xl font-black tracking-tighter tabular-nums color-transition ${isBreak ? 'text-emerald-700' : 'text-orange-700'}`}>{Math.floor(pomoTime / 60).toString().padStart(2, '0')}:{ (pomoTime % 60).toString().padStart(2, '0')}</span>
                                             <span className={`uppercase tracking-widest font-bold text-sm color-transition ${isBreak ? 'text-emerald-500' : 'text-orange-400'}`}>{pomoIsActive ? (isBreak ? 'Relax Time' : 'Focus Time') : 'Paused'}</span>
                                         </div>
                                     </ProgressCircle>
@@ -737,217 +729,188 @@
                                     <button onClick={handleAntiStress} className={`p-4 rounded-full bg-white shadow-lg transition-transform active:scale-90 color-transition ${isSquishing ? 'animate-squish' : ''} ${isBreak ? 'text-emerald-500 hover:bg-emerald-50' : 'text-orange-500 hover:bg-orange-50'}`}><TomatoIcon size={28} color="currentColor" /></button>
                                 </div>
                             </div>
-                            
                             {isPomoSettingsOpen && (<div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 animate-in zoom-in-95"><div className="flex justify-between items-center mb-6"><h3 className="text-lg font-bold text-slate-800">Impostazioni Timer</h3><button onClick={() => setIsPomoSettingsOpen(false)}><X size={20} className="text-slate-400" /></button></div><div className="space-y-4"><div><label className="block text-xs font-bold text-slate-400 uppercase mb-2">Durata Focus (min)</label><input type="number" value={pomoWorkDuration} onChange={(e) => { const val = parseInt(e.target.value) || 25; setPomoWorkDuration(val); if(pomoMode === 'work' && !pomoIsActive) setPomoTime(val * 60); }} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center font-bold text-slate-700" /></div><div><label className="block text-xs font-bold text-slate-400 uppercase mb-2">Durata Pausa (min)</label><input type="number" value={pomoBreakDuration} onChange={(e) => { const val = parseInt(e.target.value) || 5; setPomoBreakDuration(val); if(pomoMode === 'break' && !pomoIsActive) setPomoTime(val * 60); }} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center font-bold text-slate-700" /></div></div><button onClick={() => setIsPomoSettingsOpen(false)} className="w-full mt-6 bg-slate-900 text-white py-3 rounded-xl font-bold">Chiudi</button></div></div>)}
-                            
-                            {/* Scratchpad Modal */}
-                            {isScratchpadOpen && (
-                                <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 animate-in zoom-in-95 flex flex-col h-[60vh]">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <div className="flex items-center gap-2 text-slate-800">
-                                                <Edit2 size={20} className={isBreak ? "text-emerald-600" : "text-orange-600"} />
-                                                <h3 className="text-lg font-bold">Blocco Note Rapido</h3>
-                                            </div>
-                                            <button onClick={() => setIsScratchpadOpen(false)}><X size={20} className="text-slate-400" /></button>
-                                        </div>
-                                        <textarea value={scratchpadNote} onChange={(e) => setScratchpadNote(e.target.value)} className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-orange-500/20 resize-none mb-4 custom-scrollbar" placeholder="Scrivi qui i tuoi pensieri..." />
-                                        <div className="flex gap-3">
-                                            <button onClick={() => setScratchpadNote('')} className="px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors flex items-center gap-2"><Trash2 size={16} /> Reset</button>
-                                            <button onClick={() => setIsScratchpadOpen(false)} className="flex-1 py-2 bg-slate-900 text-white rounded-xl font-bold text-sm shadow-lg">Chiudi</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* REPORT MODAL - FIXED GRAPH HEIGHT/LAYOUT */}
-                            {isReportsOpen && (
-                                <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                                    <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 animate-in zoom-in-95">
-                                        <div className="flex justify-between items-center mb-6">
-                                            <div className="flex items-center gap-2 text-slate-800">
-                                                <BarChart3 size={24} className="text-orange-600" />
-                                                <h3 className="text-xl font-bold">Report Attività</h3>
-                                            </div>
-                                            <button onClick={() => setIsReportsOpen(false)}><X size={20} className="text-slate-400" /></button>
-                                        </div>
-                                        
-                                        <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
-                                            <button onClick={() => setReportMode('weekly')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${reportMode === 'weekly' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Settimanale</button>
-                                            <button onClick={() => setReportMode('monthly')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${reportMode === 'monthly' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Mensile</button>
-                                        </div>
-
-                                        {reportMode === 'monthly' && (
-                                            <div className="flex items-center justify-between mb-4 px-2">
-                                                <button onClick={() => setReportDate(new Date(reportDate.getFullYear(), reportDate.getMonth() - 1, 1))} className="p-1 hover:bg-slate-100 rounded-full"><ChevronLeft size={20} className="text-slate-500" /></button>
-                                                <span className="text-sm font-bold text-slate-700 capitalize">{reportDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}</span>
-                                                <button onClick={() => setReportDate(new Date(reportDate.getFullYear(), reportDate.getMonth() + 1, 1))} className="p-1 hover:bg-slate-100 rounded-full"><ChevronRight size={20} className="text-slate-500" /></button>
-                                            </div>
-                                        )}
-
-                                        <div className="h-64 w-full flex items-end justify-between gap-2 px-2">
-                                            {reportMode === 'weekly' ? (
-                                                safeWeeklyData.map((item, idx) => {
-                                                    const max = Math.max(...safeWeeklyData.map(d => d.minutes), 1); 
-                                                    const h = Math.max((item.minutes / max) * 100, 5);
-                                                    return (
-                                                        <div key={idx} className="flex flex-col items-center gap-2 flex-1 group h-full justify-end">
-                                                            <div className="relative w-full bg-orange-100 rounded-t-lg overflow-hidden transition-all group-hover:bg-orange-200" style={{ height: `${h}%` }}>
-                                                                <div className="absolute bottom-0 left-0 right-0 top-0 bg-orange-500 opacity-20"></div>
-                                                                <div className="absolute bottom-0 w-full bg-orange-500 transition-all duration-500" style={{ height: '100%' }}></div>
-                                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">{item.minutes}m</div>
-                                                            </div>
-                                                            <span className="text-[10px] font-bold text-slate-400 uppercase">{item.day}</span>
-                                                        </div>
-                                                    );
-                                                })
-                                            ) : (
-                                                safeMonthlyData.map((item, idx) => {
-                                                    const max = Math.max(...safeMonthlyData.map(d => d.minutes), 1);
-                                                    const h = Math.max((item.minutes / max) * 100, 5);
-                                                    return (
-                                                        <div key={idx} className="flex flex-col items-center gap-2 flex-1 group h-full justify-end">
-                                                            <div className="relative w-full bg-indigo-100 rounded-t-lg overflow-hidden transition-all group-hover:bg-indigo-200" style={{ height: `${h}%` }}>
-                                                                <div className="absolute bottom-0 left-0 right-0 top-0 bg-indigo-500 opacity-20"></div>
-                                                                <div className="absolute bottom-0 w-full bg-indigo-500 transition-all duration-500" style={{ height: '100%' }}></div>
-                                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">{item.hours}h</div>
-                                                            </div>
-                                                            <span className="text-[10px] font-bold text-slate-400 uppercase">{item.label}</span>
-                                                        </div>
-                                                    );
-                                                })
-                                            )}
-                                        </div>
-                                        
-                                        <div className="mt-6 bg-slate-50 p-4 rounded-xl text-center">
-                                            <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Totale periodo</p>
-                                            <p className="text-3xl font-black text-slate-800 tracking-tight">
-                                                {reportMode === 'weekly' 
-                                                    ? safeWeeklyData.reduce((acc, curr) => acc + curr.minutes, 0)
-                                                    : (safeMonthlyData.reduce((acc, curr) => acc + curr.minutes, 0) / 60).toFixed(1)
-                                                }<span className="text-lg text-slate-400 font-medium ml-1">{reportMode === 'weekly' ? 'min' : 'ore'}</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            {isScratchpadOpen && (<div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 animate-in zoom-in-95 flex flex-col h-[60vh]"><div className="flex justify-between items-center mb-4"><div className="flex items-center gap-2 text-slate-800"><Edit2 size={20} className={isBreak ? "text-emerald-600" : "text-orange-600"} /><h3 className="text-lg font-bold">Blocco Note Rapido</h3></div><button onClick={() => setIsScratchpadOpen(false)}><X size={20} className="text-slate-400" /></button></div><textarea value={scratchpadNote} onChange={(e) => setScratchpadNote(e.target.value)} className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-orange-500/20 resize-none mb-4 custom-scrollbar" placeholder="Scrivi qui i tuoi pensieri..." /><div className="flex gap-3"><button onClick={() => setScratchpadNote('')} className="px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors flex items-center gap-2"><Trash2 size={16} /> Reset</button><button onClick={() => setIsScratchpadOpen(false)} className="flex-1 py-2 bg-slate-900 text-white rounded-xl font-bold text-sm shadow-lg">Chiudi</button></div></div></div>)}
+                            {isReportsOpen && (<div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 animate-window-open"><div className="flex justify-between items-center mb-6"><div className="flex items-center gap-2 text-slate-800"><BarChart3 size={24} className="text-orange-600" /><h3 className="text-xl font-bold">Report Attività</h3></div><button onClick={() => setIsReportsOpen(false)}><X size={20} className="text-slate-400" /></button></div><div className="flex p-1 bg-slate-100 rounded-xl mb-6"><button onClick={() => setReportMode('weekly')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${reportMode === 'weekly' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Settimanale</button><button onClick={() => setReportMode('monthly')} className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${reportMode === 'monthly' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Mensile</button></div>{reportMode === 'monthly' && (<div className="flex items-center justify-between mb-4 px-2"><button onClick={() => setReportDate(new Date(reportDate.getFullYear(), reportDate.getMonth() - 1, 1))} className="p-1 hover:bg-slate-100 rounded-full"><ChevronLeft size={20} className="text-slate-500" /></button><span className="text-sm font-bold text-slate-700 capitalize">{reportDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}</span><button onClick={() => setReportDate(new Date(reportDate.getFullYear(), reportDate.getMonth() + 1, 1))} className="p-1 hover:bg-slate-100 rounded-full"><ChevronRight size={20} className="text-slate-500" /></button></div>)}{reportMode === 'weekly' ? (<div className="h-64 w-full relative bg-slate-50/50 rounded-xl border border-slate-100 mb-2 overflow-hidden">{(() => { const max = Math.max(...safeWeeklyData.map(d => d.minutes), 0); const gMax = Math.max(max, 50); const l25 = (25 / gMax) * 100; const l50 = (50 / gMax) * 100; return (<><div className="absolute inset-0 w-full h-full pointer-events-none"><div className="absolute w-full border-t border-dashed border-slate-300/60" style={{ bottom: `${l25}%` }}><span className="absolute -top-3 left-1 text-[9px] font-bold text-slate-400 bg-slate-50/80 px-0.5 rounded">25m</span></div><div className="absolute w-full border-t border-dashed border-slate-300/60" style={{ bottom: `${l50}%` }}><span className="absolute -top-3 left-1 text-[9px] font-bold text-slate-400 bg-slate-50/80 px-0.5 rounded">50m</span></div></div><div className="absolute inset-0 flex items-end justify-between gap-2 px-4 pb-6 pt-4 z-10">{safeWeeklyData.map((item, idx) => (<div key={idx} className="flex flex-col items-center gap-1 flex-1 group h-full justify-end relative"><div className="relative w-full bg-orange-100 rounded-t-lg overflow-visible transition-all group-hover:bg-orange-200 animate-bar-grow origin-bottom" style={{ height: `${Math.max((item.minutes / gMax) * 100, 2)}%`, animationDelay: `${idx * 50}ms` }}><div className="absolute bottom-0 left-0 right-0 top-0 bg-orange-500 opacity-20 rounded-t-lg"></div><div className="absolute bottom-0 w-full bg-orange-500 transition-all duration-500 rounded-t-lg" style={{ height: '100%' }}></div><div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-md">{item.minutes}m</div>{item.minutes > 10 && (<span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-xs font-black text-orange-950/60 z-20 pointer-events-none">{item.minutes}</span>)}</div><span className="absolute -bottom-6 text-[9px] font-bold text-slate-400 uppercase">{item.day}</span></div>))}</div></>); })()}</div>) : (<div className="h-64 w-full flex items-end justify-between gap-2 px-2">{safeMonthlyData.map((item, idx) => { const max = Math.max(...safeMonthlyData.map(d => d.minutes), 1); return (<div key={idx} className="flex flex-col items-center gap-2 flex-1 group h-full justify-end relative"><div className="relative w-full bg-indigo-100 rounded-t-lg overflow-visible transition-all group-hover:bg-indigo-200 animate-bar-grow origin-bottom" style={{ height: `${Math.max((item.minutes / max) * 100, 5)}%`, animationDelay: `${idx * 50}ms` }}><div className="absolute bottom-0 left-0 right-0 top-0 bg-indigo-500 opacity-20 rounded-t-lg"></div><div className="absolute bottom-0 w-full bg-indigo-500 transition-all duration-500 rounded-t-lg" style={{ height: '100%' }}></div><div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-md">{item.hours}h</div>{parseFloat(item.hours) >= 1 && (<span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-xs font-black text-indigo-950/60 z-20 pointer-events-none">{item.hours}</span>)}</div><span className="text-[10px] font-bold text-slate-400 uppercase">{item.label}</span></div>); })}</div>)}<div className="mt-6 bg-slate-50 p-4 rounded-xl text-center"><p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Totale periodo</p><p className="text-3xl font-black text-slate-800 tracking-tight">{reportMode === 'weekly' ? safeWeeklyData.reduce((a, c) => a + c.minutes, 0) : (safeMonthlyData.reduce((a, c) => a + c.minutes, 0) / 60).toFixed(1)}<span className="text-lg text-slate-400 font-medium ml-1">{reportMode === 'weekly' ? 'min' : 'ore'}</span></p></div></div></div>)}
                         </div>
                     )}
 
-                    {/* --- STUDY VIEW --- */}
                     {viewMode === 'study' && (
                         <div className="absolute inset-0 z-10 flex flex-col md:flex-row bg-[#f8f9fa]">
                             <aside className="w-full md:w-80 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 z-20 shadow-sm md:shadow-none">
-                                <div className="p-6 pb-4">
-                                    <button onClick={() => switchView('pomodoro')} disabled={transitionState !== 'idle'} className={`w-full text-left group ${transitionState !== 'idle' ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                                        <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2 tracking-tight group-hover:text-blue-600 transition-colors">
-                                            <div className="bg-blue-600 text-white p-2 rounded-xl shadow-blue-200 shadow-lg animate-logo-float group-hover:scale-110 transition-transform"><FileText size={24} /></div>StudyLog
-                                        </h1>
-                                        <p className="text-[10px] text-slate-400 ml-12 mt-1 font-medium uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">Clicca per Focus Mode</p>
-                                    </button>
-                                </div>
-                                <div className="flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar pb-4">
-                                    {subjects.map((subject) => (
-                                        <div key={subject.name} className="mb-1">
-                                            <div className={`group relative flex items-center rounded-xl transition-all duration-200 cursor-pointer select-none ${activeSubject === subject.name && activeSubSubject === null ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-100'}`} onClick={() => { setActiveSubject(subject.name); setActiveSubSubject(null); }}>
-                                                <button onClick={(e) => { e.stopPropagation(); setSubjects(subjects.map(s => s.name === subject.name ? { ...s, isOpen: !s.isOpen } : s)); }} className={`p-3 pr-1 hover:text-blue-600 transition-colors ${activeSubject === subject.name ? getTextClass(subject.color || 'bg-blue-500') : 'text-slate-400'}`}>{subject.subSubjects?.length > 0 ? (subject.isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />) : <div className="w-4" />}</button>
-                                                <div className="flex-1 py-3 pr-4 text-sm font-semibold flex justify-between items-center min-w-0"><div className="truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all">{subject.name}</div><div className="flex items-center gap-2 ml-2 shrink-0"><div className={`w-2 h-2 rounded-full ${subject.color || 'bg-blue-500'}`}></div>{activeSubject === subject.name && !activeSubSubject && <span className="bg-blue-100 text-blue-700 text-[10px] py-0.5 px-2 rounded-full">{items.filter(i => i.subject === subject.name).length}</span>}</div></div>
-                                                <div className="absolute right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity bg-inherit pl-2"><button onClick={(e) => { e.stopPropagation(); setTargetSubjectForSub(subject.name); setIsSubSubjectModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md mr-1"><Plus size={14} /></button><button onClick={(e) => { e.stopPropagation(); requestDelete('subject', subject.name); }} className="p-1.5 text-slate-400 hover:text-red-600 rounded-md"><Trash2 size={14} /></button></div>
-                                            </div>
-                                            {subject.isOpen && subject.subSubjects?.map(sub => (
-                                                <div key={sub.name} onClick={() => { setActiveSubject(subject.name); setActiveSubSubject(sub.name); }} className={`ml-4 border-l-2 border-slate-100 pl-2 mt-1 flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium cursor-pointer group ${activeSubject === subject.name && activeSubSubject === sub.name ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}>
-                                                    <div className="flex items-center gap-2 min-w-0 flex-1"><CornerDownRight size={12} className="opacity-50 shrink-0" /><div className="truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all">{sub.name}</div></div>
-                                                    <div className="flex items-center gap-2 shrink-0 ml-2">{sub.goal > 0 && (<div className="w-1.5 h-1.5 rounded-full bg-slate-200 overflow-hidden relative"><div className="absolute top-0 left-0 bottom-0 bg-blue-500 w-full" style={{ height: `${Math.min(((sub.completed || 0) / sub.goal) * 100, 100)}%` }}></div></div>)}<button onClick={(e) => { e.stopPropagation(); requestDelete('subSubject', { subjectName: subject.name, subName: sub.name }); }} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500"><X size={12} /></button></div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
-                                    <button onClick={() => setIsSubjectModalOpen(true)} className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white border border-dashed border-slate-300 mt-4 flex items-center gap-2"><Plus size={16} /> Nuova Materia</button>
-                                </div>
-                                <div className="flex flex-col bg-slate-50/50 border-t border-slate-200">
-                                    {activeSubject && (<div className="px-4 pb-4 pt-2"><div className="flex justify-between items-center mb-2"><button onClick={handleOpenCalendar} className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer"><CalendarDays size={12} /> Calendario Appelli</button><button onClick={() => setIsAppelloModalOpen(true)} className="p-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors"><Plus size={12} /></button></div><div className="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar pr-1">{sortedAppelli.length === 0 ? (<div className="text-xs text-slate-400 italic py-1">Nessun appello programmato</div>) : (sortedAppelli.map(appello => { const diff = getDaysLeft(appello.date); let badgeClass = "bg-slate-100 text-slate-500"; if (diff <= 3) badgeClass = "bg-red-100 text-red-600"; else if (diff <= 10) badgeClass = "bg-orange-100 text-orange-600"; else badgeClass = "bg-blue-50 text-blue-600"; return (<div key={appello.id} className="flex justify-between items-center bg-white border border-slate-100 rounded-lg p-2 text-xs shadow-sm group"><div className="flex flex-col"><span className="font-semibold text-slate-700">{formatDate(appello.date)}</span>{appello.note && <span className="text-[10px] text-slate-400">{appello.note}</span>}</div><div className="flex items-center gap-2"><span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${badgeClass}`}>{diff === 0 ? "OGGI" : diff < 0 ? "Passato" : `-${diff}gg`}</span><button onClick={() => handleDeleteAppello(appello.id)} className="text-slate-300 hover:text-red-500 hidden group-hover:block"><X size={12} /></button></div></div>); }))}</div></div>)}
-                                </div>
+                                <div className="p-6 pb-4"><button onClick={() => handleSwitchView('pomodoro')} disabled={transitionState !== 'idle'} className={`w-full text-left group ${transitionState !== 'idle' ? 'opacity-50 cursor-not-allowed' : ''}`}><h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2 tracking-tight group-hover:text-blue-600 transition-colors"><div className="bg-blue-600 text-white p-2 rounded-xl shadow-blue-200 shadow-lg animate-logo-float group-hover:scale-110 transition-transform"><FileText size={24} /></div>StudyLog</h1><p className="text-[10px] text-slate-400 ml-12 mt-1 font-medium uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">Clicca per Focus Mode</p></button></div>
+                                <div className="flex-1 overflow-y-auto px-3 space-y-1 custom-scrollbar pb-4">{subjects.map((subject) => (<div key={subject.name} className="mb-1"><div className={`group relative flex items-center rounded-xl transition-all duration-200 cursor-pointer select-none ${activeSubject === subject.name && activeSubSubject === null ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-100'}`} onClick={() => { setActiveSubject(subject.name); setActiveSubSubject(null); }}><button onClick={(e) => { e.stopPropagation(); setSubjects(subjects.map(s => s.name === subject.name ? { ...s, isOpen: !s.isOpen } : s)); }} className={`p-3 pr-1 hover:text-blue-600 transition-colors ${activeSubject === subject.name ? getTextClass(subject.color || 'bg-blue-500') : 'text-slate-400'}`}>{subject.subSubjects?.length > 0 ? (subject.isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />) : <div className="w-4" />}</button><div className="flex-1 py-3 pr-4 text-sm font-semibold flex justify-between items-center min-w-0"><div className="truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all">{subject.name}</div><div className="flex items-center gap-2 ml-2 shrink-0"><div className={`w-2 h-2 rounded-full ${subject.color || 'bg-blue-500'}`}></div>{activeSubject === subject.name && !activeSubSubject && <span className="bg-blue-100 text-blue-700 text-[10px] py-0.5 px-2 rounded-full">{items.filter(i => i.subject === subject.name).length}</span>}</div></div><div className="absolute right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity bg-inherit pl-2"><button onClick={(e) => { e.stopPropagation(); setTargetSubjectForSub(subject.name); setIsSubSubjectModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md mr-1"><Plus size={14} /></button><button onClick={(e) => { e.stopPropagation(); requestDelete('subject', subject.name); }} className="p-1.5 text-slate-400 hover:text-red-600 rounded-md"><Trash2 size={14} /></button></div></div>{subject.isOpen && subject.subSubjects?.map(sub => (<div key={sub.name} onClick={() => { setActiveSubject(subject.name); setActiveSubSubject(sub.name); }} className={`ml-4 border-l-2 border-slate-100 pl-2 mt-1 flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium cursor-pointer group ${activeSubject === subject.name && activeSubSubject === sub.name ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}><div className="flex items-center gap-2 min-w-0 flex-1"><CornerDownRight size={12} className="opacity-50 shrink-0" /><div className="truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all">{sub.name}</div></div><div className="flex items-center gap-2 shrink-0 ml-2">{sub.goal > 0 && (<div className="w-1.5 h-1.5 rounded-full bg-slate-200 overflow-hidden relative"><div className="absolute top-0 left-0 bottom-0 bg-blue-500 w-full" style={{ height: `${Math.min(((sub.completed || 0) / sub.goal) * 100, 100)}%` }}></div></div>)}<button onClick={(e) => { e.stopPropagation(); requestDelete('subSubject', { subjectName: subject.name, subName: sub.name }); }} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500"><X size={12} /></button></div></div>))}</div>))}<button onClick={() => setIsSubjectModalOpen(true)} className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-white border border-dashed border-slate-300 mt-4 flex items-center gap-2"><Plus size={16} /> Nuova Materia</button></div>
+                                <div className="flex flex-col bg-slate-50/50 border-t border-slate-200">{activeSubject && (<div className="px-4 pb-4 pt-2"><div className="flex justify-between items-center mb-2"><button onClick={handleOpenCalendar} className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer"><CalendarDays size={12} /> Calendario Appelli</button><button onClick={() => setIsAppelloModalOpen(true)} className="p-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors"><Plus size={12} /></button></div><div className="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar pr-1">{filteredAppelli.length === 0 ? (<div className="text-xs text-slate-400 italic py-1">Nessun appello programmato</div>) : (filteredAppelli.map(appello => { const diff = getDaysLeft(appello.date); let badgeClass = "bg-slate-100 text-slate-500"; if (diff <= 3) badgeClass = "bg-red-100 text-red-600"; else if (diff <= 10) badgeClass = "bg-orange-100 text-orange-600"; else badgeClass = "bg-blue-50 text-blue-600"; return (<div key={appello.id} className="flex justify-between items-center bg-white border border-slate-100 rounded-lg p-2 text-xs shadow-sm group"><div className="flex flex-col"><span className="font-semibold text-slate-700">{new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', year: '2-digit' }).format(new Date(appello.date))}</span>{appello.note && <span className="text-[10px] text-slate-400">{appello.note}</span>}</div><div className="flex items-center gap-2"><span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${badgeClass}`}>{diff === 0 ? "OGGI" : diff < 0 ? "Passato" : `-${diff}gg`}</span><button onClick={() => setDeleteConfig({ isOpen: true, type: 'appello', data: appello.id })} className="text-slate-300 hover:text-red-500 hidden group-hover:block"><X size={12} /></button></div></div>); }))}</div></div>)}</div>
                             </aside>
-
                             <main className="flex-1 flex flex-col h-screen relative overflow-hidden">
                                 <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center gap-4 z-10">
                                     <div className="flex-1 min-w-0 flex items-center gap-3">
-                                        {activeSubject && (<ProgressCircle completed={activeSubSubject ? subProgress.completed : mainProgress.completed} total={activeSubSubject ? subProgress.total : mainProgress.total} size={42} stroke={3} showText={false} color="text-blue-600" />)}
-                                        <div><h2 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2 truncate">{activeSubSubject ? activeSubSubject : (activeSubject || "Seleziona Materia")}{activeSubSubject && <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-md border shrink-0">in {activeSubject}</span>}</h2>{activeSubject && (<div className="flex items-center gap-2 mt-1 flex-wrap"><button onClick={openGoalModal} className="text-xs text-blue-600 hover:bg-blue-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1"><Target size={14} /> {activeSubSubject ? (subProgress.total > 0 ? `Obiettivo: ${subProgress.total}` : "Imposta obiettivo") : (mainProgress.total > 0 ? `Totale: ${mainProgress.total}` : "Imposta obiettivo")}</button><button onClick={openNoteModal} className="text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1"><StickyNote size={14} /> Note</button><button onClick={openExamModal} className={`text-xs px-2 py-1 rounded-md transition-all flex items-center gap-1 shadow-sm ${daysColorClass}`}><CalendarClock size={14} /> {daysLeft === null ? "Imposta Esame" : daysLeft === 0 ? "OGGI" : daysLeft > 0 ? `-${daysLeft} gg` : "Passato"}</button></div>)}</div>
+                                        {activeSubject && (<ProgressCircle completed={activeSubSubject ? (activeData?.completed||0) : (activeSubjectData?.subSubjects ? activeSubjectData.subSubjects.reduce((a,b)=>a+(b.completed||0),0)+(activeSubjectData.completed||0) : activeSubjectData?.completed||0)} total={activeSubSubject ? (activeData?.goal||0) : (activeSubjectData?.subSubjects ? activeSubjectData.subSubjects.reduce((a,b)=>a+(b.goal||0),0)+(activeSubjectData.goal||0) : activeSubjectData?.goal||0)} size={42} stroke={3} showText={false} color="text-blue-600" />)}
+                                        <div><h2 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2 truncate">{activeSubSubject ? activeSubSubject : (activeSubject || "Seleziona Materia")}{activeSubSubject && <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-md border shrink-0">in {activeSubject}</span>}</h2>{activeSubject && (<div className="flex items-center gap-2 mt-1 flex-wrap"><button onClick={openGoalModal} className="text-xs text-blue-600 hover:bg-blue-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1"><Target size={14} /> {activeSubSubject ? ((activeData?.goal||0) > 0 ? `Obiettivo: ${activeData?.goal}` : "Imposta obiettivo") : ((activeSubjectData?.goal||0) > 0 ? `Totale: ${activeSubjectData?.goal}` : "Imposta obiettivo")}</button><button onClick={openNoteModal} className="text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1"><StickyNote size={14} /> Note</button><button onClick={openExamModal} className={`text-xs px-2 py-1 rounded-md transition-all flex items-center gap-1 shadow-sm ${daysColorClass}`}><CalendarClock size={14} /> {daysLeft === null ? "Imposta Esame" : daysLeft === 0 ? "OGGI" : daysLeft > 0 ? `-${daysLeft} gg` : "Passato"}</button></div>)}</div>
                                     </div>
-                                    <div className="flex items-center gap-3 shrink-0">{installPrompt && (<button onClick={handleInstall} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1 animate-pulse"><Download size={14} /> <span className="hidden md:inline">Install</span></button>)}
-                                    
-                                    <input type="file" id="import-json" accept=".json" className="hidden" onChange={handleImportData} />
-                                    <button onClick={() => document.getElementById('import-json').click()} className="bg-slate-200 hover:bg-slate-300 text-slate-600 p-2.5 rounded-full transition-colors" title="Carica Salvataggio"><Upload size={18} /></button>
-                                    
-                                    <button onClick={handleExportData} className="bg-slate-200 hover:bg-slate-300 text-slate-600 p-2.5 rounded-full transition-colors" title="Backup Dati"><Save size={18} /></button>
-                                    
-                                    <button onClick={openAddModal} disabled={!activeSubject} className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full shadow-lg flex items-center gap-2 font-medium text-sm disabled:opacity-50 active:scale-95 transition-transform"><Plus size={18} /> <span className="hidden sm:inline">Aggiungi PDF/Audio</span></button></div>
+                                    <div className="flex items-center gap-3 shrink-0">{installPrompt && (<button onClick={() => installPrompt.prompt()} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1 animate-pulse"><Download size={14} /> <span className="hidden md:inline">Install</span></button>)}<input type="file" id="import-json" accept=".json" className="hidden" onChange={handleImportData} /><button onClick={() => document.getElementById('import-json').click()} className="bg-slate-200 hover:bg-slate-300 text-slate-600 p-2.5 rounded-full transition-colors" title="Carica Salvataggio"><Upload size={18} /></button><button onClick={handleExportData} className="bg-slate-200 hover:bg-slate-300 text-slate-600 p-2.5 rounded-full transition-colors" title="Backup Dati"><Save size={18} /></button><button onClick={openAddModal} disabled={!activeSubject} className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full shadow-lg flex items-center gap-2 font-medium text-sm disabled:opacity-50 active:scale-95 transition-transform"><Plus size={18} /> <span className="hidden sm:inline">Aggiungi PDF/Audio</span></button></div>
                                 </header>
                                 <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar pb-24">
-                                    {!activeSubSubject && activeSubject && (<div className="mb-8"><div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center gap-8 mb-6"><ProgressCircle completed={mainProgress.completed} total={mainProgress.total} size={180} stroke={15} color="text-indigo-600" label="TOTALE" fontSize="text-2xl" labelSize="text-[10px]" /><div className="flex-1 text-center md:text-left min-w-0"><h3 className="text-2xl font-bold text-slate-800 mb-2 flex items-center justify-center md:justify-start gap-2"><PieChart className="text-indigo-500" /> Panoramica Corso</h3><p className="text-slate-500 mb-4">Hai completato <strong>{mainProgress.completed}</strong> lezioni su <strong>{mainProgress.total || '?'}</strong> in totale.</p>{getActiveSubjectData()?.notes && (<div className="bg-yellow-50 border border-yellow-100 p-3 rounded-xl mb-4 text-sm text-yellow-800"><div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-1 text-yellow-600"><StickyNote size={12} /> Note</div>{getActiveSubjectData().notes}</div>)}{paceInfo && (<div className={`p-3 rounded-xl mb-4 text-sm border flex items-center gap-3 ${paceInfo.type === 'error' ? 'bg-red-50 border-red-100 text-red-800' : 'bg-emerald-50 border-emerald-100 text-emerald-800'}`}><div className={`p-2 rounded-lg ${paceInfo.type === 'error' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}><Calculator size={20} /></div><div>{paceInfo.type === 'error' ? (<span className="font-bold">{paceInfo.msg}</span>) : paceInfo.type === 'success' ? (<span className="font-bold">Ottimo lavoro! Corso completato.</span>) : (<><div className="font-bold text-base">{paceInfo.pages} Pagine / Giorno</div><div className="text-xs opacity-80">(Circa {paceInfo.lessons} lez/giorno) per finire {paceInfo.buffer} giorni prima dell'esame.</div></>)}</div></div>)}<div className="grid grid-cols-2 gap-4"><div className="bg-indigo-50 p-3 rounded-xl"><div className="text-xs text-indigo-400 font-bold uppercase">Lezioni Fatte</div><div className="text-xl font-bold text-indigo-700">{mainProgress.completed}</div></div><div className="bg-slate-50 p-3 rounded-xl"><div className="text-xs text-slate-400 font-bold uppercase">Mancanti</div><div className="text-xl font-bold text-slate-600">{Math.max(0, mainProgress.total - mainProgress.completed)}</div></div></div></div></div>{activeSubjectData?.subSubjects?.length > 0 && (<div className="grid grid-cols-2 md:grid-cols-4 gap-4">{activeSubjectData.subSubjects.map(sub => { const prog = calculateProgress(activeSubject, sub.name); return (<button key={sub.name} onClick={() => setActiveSubSubject(sub.name)} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col items-center gap-3 group relative overflow-hidden">{sub.notes && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-yellow-400"></div>}<ProgressCircle completed={prog.completed} total={prog.total} size={60} stroke={5} color="text-blue-500" /><span className="text-sm font-bold text-slate-700 group-hover:text-blue-600 max-w-full"><div className="truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all px-2">{sub.name}</div></span></button>); })}</div>)}</div>)}
-                                    {activeSubSubject && (<div className="mb-8 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6"><div className="flex items-center gap-6 w-full md:w-auto"><ProgressCircle completed={subProgress.completed} total={subProgress.total} size={160} stroke={12} color="text-blue-600" label="Lezioni" fontSize="text-2xl" labelSize="text-[10px]" /><div className="flex-1 min-w-0"><h3 className="text-xl font-bold text-slate-800 mb-1 flex items-center">Progresso: <div className="ml-2 truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all">{activeSubSubject}</div></h3><p className="text-slate-500 text-sm mb-2">Lezioni completate: <strong className="text-slate-800">{subProgress.completed}</strong> / <strong className="text-slate-800">{subProgress.total || '?'}</strong>.</p>{getActiveSubData()?.notes && (<div className="bg-yellow-50 border border-yellow-100 p-3 rounded-xl text-sm text-yellow-800 max-w-xs mb-2"><div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-1 text-yellow-600"><StickyNote size={12} /> Note</div>{getActiveSubData().notes}</div>)}{paceInfo && (<div className={`p-3 rounded-xl text-sm border flex items-center gap-3 max-w-sm ${paceInfo.type === 'error' ? 'bg-red-50 border-red-100 text-red-800' : 'bg-emerald-50 border-emerald-100 text-emerald-800'}`}><div className={`p-2 rounded-lg ${paceInfo.type === 'error' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}><Calculator size={18} /></div><div>{paceInfo.type === 'error' ? (<span className="font-bold text-xs">{paceInfo.msg}</span>) : paceInfo.type === 'success' ? (<span className="font-bold">Completato!</span>) : (<><div className="font-bold text-base">{paceInfo.pages} Pagine / Giorno</div><div className="text-[10px] opacity-80">(~{paceInfo.lessons} lez) per finire {paceInfo.buffer}gg prima.</div></>)}</div></div>)}</div></div><div className="flex flex-col gap-3 w-full md:w-auto"><button onClick={handleIncrementLessons} className="bg-blue-600 hover:bg-blue-700 text-white border border-transparent px-6 py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-3 w-full md:min-w-[180px]"><div className="bg-white/20 p-1 rounded-lg"><Plus size={20} /></div><span>Lezione Fatta</span></button><button onClick={handleDecrementLessons} disabled={subProgress.completed <= 0} className="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-transparent hover:border-red-100 px-4 py-3 rounded-2xl font-medium active:scale-95 transition-all flex items-center justify-center gap-2 w-full md:min-w-[180px] disabled:opacity-50 disabled:cursor-not-allowed"><Minus size={16} /><span className="text-sm">Rimuovi</span></button></div></div>)}
+                                    {!activeSubSubject && activeSubject && (<div className="mb-8"><div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center gap-8 mb-6"><ProgressCircle completed={calculateProgress(activeSubject).completed} total={calculateProgress(activeSubject).total} size={180} stroke={15} color="text-indigo-600" label="TOTALE" fontSize="text-2xl" labelSize="text-[10px]" /><div className="flex-1 text-center md:text-left min-w-0"><h3 className="text-2xl font-bold text-slate-800 mb-2 flex items-center justify-center md:justify-start gap-2"><PieChart className="text-indigo-500" /> Panoramica Corso</h3><p className="text-slate-500 mb-4">Hai completato <strong>{calculateProgress(activeSubject).completed}</strong> lezioni su <strong>{calculateProgress(activeSubject).total || '?'}</strong> in totale.</p>{activeSubjectData?.notes && (<div className="bg-yellow-50 border border-yellow-100 p-3 rounded-xl mb-4 text-sm text-yellow-800"><div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-1 text-yellow-600"><StickyNote size={12} /> Note</div>{activeSubjectData.notes}</div>)}{paceInfo && (<div className={`p-3 rounded-xl mb-4 text-sm border flex items-center gap-3 ${paceInfo.type === 'error' ? 'bg-red-50 border-red-100 text-red-800' : 'bg-emerald-50 border-emerald-100 text-emerald-800'}`}><div className={`p-2 rounded-lg ${paceInfo.type === 'error' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}><Calculator size={20} /></div><div>{paceInfo.type === 'error' ? (<span className="font-bold">{paceInfo.msg}</span>) : paceInfo.type === 'success' ? (<span className="font-bold">Ottimo lavoro! Corso completato.</span>) : (<><div className="font-bold text-base">{paceInfo.pages} Pagine / Giorno</div><div className="text-xs opacity-80">(Circa {paceInfo.lessons} lez/giorno) per finire {paceInfo.buffer} giorni prima dell'esame.</div></>)}</div></div>)}<div className="grid grid-cols-2 gap-4"><div className="bg-indigo-50 p-3 rounded-xl"><div className="text-xs text-indigo-400 font-bold uppercase">Lezioni Fatte</div><div className="text-xl font-bold text-indigo-700">{calculateProgress(activeSubject).completed}</div></div><div className="bg-slate-50 p-3 rounded-xl"><div className="text-xs text-slate-400 font-bold uppercase">Mancanti</div><div className="text-xl font-bold text-slate-600">{Math.max(0, calculateProgress(activeSubject).total - calculateProgress(activeSubject).completed)}</div></div></div></div></div>{activeSubjectData?.subSubjects?.length > 0 && (<div className="grid grid-cols-2 md:grid-cols-4 gap-4">{activeSubjectData.subSubjects.map(sub => { const prog = calculateProgress(activeSubject, sub.name); return (<button key={sub.name} onClick={() => setActiveSubSubject(sub.name)} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex flex-col items-center gap-3 group relative overflow-hidden">{sub.notes && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-yellow-400"></div>}<ProgressCircle completed={prog.completed} total={prog.total} size={60} stroke={5} color="text-blue-500" /><span className="text-sm font-bold text-slate-700 group-hover:text-blue-600 max-w-full"><div className="truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all px-2">{sub.name}</div></span></button>); })}</div>)}</div>)}
+                                    {activeSubSubject && (<div className="mb-8 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6"><div className="flex items-center gap-6 w-full md:w-auto"><ProgressCircle completed={calculateProgress(activeSubject, activeSubSubject).completed} total={calculateProgress(activeSubject, activeSubSubject).total} size={160} stroke={12} color="text-blue-600" label="Lezioni" fontSize="text-2xl" labelSize="text-[10px]" /><div className="flex-1 min-w-0"><h3 className="text-xl font-bold text-slate-800 mb-1 flex items-center">Progresso: <div className="ml-2 truncate hover:overflow-x-auto hover:text-clip whitespace-nowrap no-scrollbar transition-all">{activeSubSubject}</div></h3><p className="text-slate-500 text-sm mb-2">Lezioni completate: <strong className="text-slate-800">{calculateProgress(activeSubject, activeSubSubject).completed}</strong> / <strong className="text-slate-800">{calculateProgress(activeSubject, activeSubSubject).total || '?'}</strong>.</p>{activeData?.notes && (<div className="bg-yellow-50 border border-yellow-100 p-3 rounded-xl text-sm text-yellow-800 max-w-xs mb-2"><div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-1 text-yellow-600"><StickyNote size={12} /> Note</div>{activeData.notes}</div>)}{paceInfo && (<div className={`p-3 rounded-xl text-sm border flex items-center gap-3 max-w-sm ${paceInfo.type === 'error' ? 'bg-red-50 border-red-100 text-red-800' : 'bg-emerald-50 border-emerald-100 text-emerald-800'}`}><div className={`p-2 rounded-lg ${paceInfo.type === 'error' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}><Calculator size={18} /></div><div>{paceInfo.type === 'error' ? (<span className="font-bold text-xs">{paceInfo.msg}</span>) : paceInfo.type === 'success' ? (<span className="font-bold">Completato!</span>) : (<><div className="font-bold text-base">{paceInfo.pages} Pagine / Giorno</div><div className="text-[10px] opacity-80">(~{paceInfo.lessons} lez) per finire {paceInfo.buffer}gg prima.</div></>)}</div></div>)}</div></div><div className="flex flex-col gap-3 w-full md:w-auto"><button onClick={handleIncrementLessons} className="bg-blue-600 hover:bg-blue-700 text-white border border-transparent px-6 py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-3 w-full md:min-w-[180px]"><div className="bg-white/20 p-1 rounded-lg"><Plus size={20} /></div><span>Lezione Fatta</span></button><button onClick={handleDecrementLessons} disabled={calculateProgress(activeSubject, activeSubSubject).completed <= 0} className="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-transparent hover:border-red-100 px-4 py-3 rounded-2xl font-medium active:scale-95 transition-all flex items-center justify-center gap-2 w-full md:min-w-[180px] disabled:opacity-50 disabled:cursor-not-allowed"><Minus size={16} /><span className="text-sm">Rimuovi</span></button></div></div>)}
                                     <div className="max-w-5xl mx-auto space-y-3">
-                                        {/* BARRA DI RICERCA SPOSTATA QUI */}
                                         <div className="relative group w-full mb-4"><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search size={16} className="text-slate-400 group-focus-within:text-blue-500 transition-colors" /></div><input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder='Cerca nel Log...' className="block w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all text-sm shadow-sm" /></div>
-                                        
-                                        <div className="flex items-center gap-2 mb-2"><div className="h-px bg-slate-200 flex-1"></div><span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Log Materiali (Audio/PDF)</span><div className="h-px bg-slate-200 flex-1"></div></div>{filteredItems.length === 0 ? (<div className="flex flex-col items-center justify-center h-32 text-slate-400"><p className="text-sm opacity-60">Nessun file (PDF/Audio) caricato nel log.</p></div>) : (filteredItems.map((item) => (<div key={item.id} className="group bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4"><div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center shrink-0 ${item.type === 'pdf' ? 'bg-orange-50 text-orange-500' : 'bg-indigo-50 text-indigo-500'}`}>{item.type === 'pdf' ? <FileText size={20} /> : <Mic size={20} />}</div><div className="flex-1 min-w-0"><h3 className="font-bold text-slate-700 truncate">{item.title}</h3><div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 mt-1">{item.subSubject && <span className="text-blue-500 bg-blue-50 px-2 py-0.5 rounded flex items-center gap-1"><Tag size={10} /> {item.subSubject}</span>}<span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(item.createdAt)}</span></div></div><button onClick={() => requestDelete('item', item.id)} className="p-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={18} /></button></div>)))}</div>
+                                        <div className="flex items-center gap-2 mb-2"><div className="h-px bg-slate-200 flex-1"></div><span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Log Materiali (Audio/PDF)</span><div className="h-px bg-slate-200 flex-1"></div></div>{filteredItems.length === 0 ? (<div className="flex flex-col items-center justify-center h-32 text-slate-400"><p className="text-sm opacity-60">Nessun file (PDF/Audio) caricato nel log.</p></div>) : (filteredItems.map((item) => (<div key={item.id} className="group bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4"><div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center shrink-0 ${item.type === 'pdf' ? 'bg-orange-50 text-orange-500' : 'bg-indigo-50 text-indigo-500'}`}>{item.type === 'pdf' ? <FileText size={20} /> : <Mic size={20} />}</div><div className="flex-1 min-w-0"><h3 className="font-bold text-slate-700 truncate">{item.title}</h3><div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 mt-1">{item.subSubject && <span className="text-blue-500 bg-blue-50 px-2 py-0.5 rounded flex items-center gap-1"><Tag size={10} /> {item.subSubject}</span>}<span className="flex items-center gap-1"><Calendar size={12} /> {new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', year: '2-digit' }).format(new Date(item.createdAt))}</span></div></div><button onClick={() => requestDelete('item', item.id)} className="p-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={18} /></button></div>)))}</div>
                                 </div>
                             </main>
                         </div>
                     )}
 
-                    {/* SHARED MODALS */}
+                    {/* MODALI - REINSERITI CORRETTAMENTE */}
                     {isAddModalOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 animate-in zoom-in-95"><div className="flex justify-between mb-6"><h3 className="text-xl font-bold text-slate-800">Carica Materiale</h3><button onClick={() => setIsAddModalOpen(false)}><X size={20} /></button></div><form onSubmit={handleAddItem} className="space-y-4"><div className="bg-blue-50 p-3 rounded-xl text-xs text-blue-700 mb-4">Nota: Questo aggiunge un file al <strong>Log</strong> in basso. Per segnare una lezione fatta, usa il tasto rapido in alto.</div><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Titolo File</label><input autoFocus type="text" placeholder="Es. Appunti PDF, Reg. Audio..." value={newItemTitle} onChange={e => setNewItemTitle(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/20" /></div><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Data</label><input type="date" value={newItemDate} onChange={e => setNewItemDate(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-slate-700" /></div>{activeSubjectData?.subSubjects?.length > 0 && (<div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Argomento</label><div className="flex flex-wrap gap-2">{activeSubjectData.subSubjects.map(sub => (<button key={sub.name} type="button" onClick={() => setNewItemSubSubject(sub.name === newItemSubSubject ? '' : sub.name)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${newItemSubSubject === sub.name ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'}`}>{sub.name}</button>))}</div></div>)}<div className="grid grid-cols-2 gap-3 pt-2"><button type="button" onClick={() => setNewItemType('pdf')} className={`p-3 rounded-xl border flex flex-col items-center transition-colors ${newItemType === 'pdf' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'bg-slate-50 text-slate-400'}`}><FileText /><span className="text-xs font-bold mt-1">PDF</span></button><button type="button" onClick={() => setNewItemType('audio')} className={`p-3 rounded-xl border flex flex-col items-center transition-colors ${newItemType === 'audio' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-400'}`}><Mic /><span className="text-xs font-bold mt-1">AUDIO</span></button></div><button type="submit" disabled={!newItemTitle.trim()} className="w-full bg-slate-900 text-white py-3.5 rounded-xl font-bold disabled:opacity-50 shadow-lg mt-2">Salva nel Log</button></form></div></div>)}
-                    {isGoalModalOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-xs rounded-3xl shadow-2xl p-6 animate-in zoom-in-95"><h3 className="text-lg font-bold text-slate-800 mb-1">Imposta Obiettivo</h3><p className="text-xs text-slate-500 mb-4">Quante lezioni totali per {activeSubSubject || activeSubject}?</p><div className="mb-4 text-xs text-slate-400">Media pagine per lezione: <input type="number" className="w-16 border rounded px-1 text-center text-slate-700 font-bold" value={newPagesPerLesson} onChange={e => setNewPagesPerLesson(e.target.value)} /></div><form onSubmit={handleUpdateGoal} className="space-y-4"><input autoFocus type="number" placeholder="0" value={newGoalValue} onChange={e => setNewGoalValue(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 text-center text-xl font-bold text-slate-800" /><div className="flex gap-2"><button type="button" onClick={() => setIsGoalModalOpen(false)} className="flex-1 py-3 bg-slate-100 rounded-xl font-medium">Annulla</button><button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Salva</button></div></form></div></div>)}
+                    {isGoalModalOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-xs rounded-3xl shadow-2xl p-6 animate-in zoom-in-95"><h3 className="text-lg font-bold text-slate-800 mb-1">Imposta Obiettivo</h3><p className="text-xs text-slate-500 mb-4">Configura il ritmo per {activeSubSubject || activeSubject}.</p><form onSubmit={handleUpdateGoal} className="space-y-4"><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Lezioni Totali</label><input autoFocus type="number" placeholder="0" value={newGoalValue} onChange={e => setNewGoalValue(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 text-center text-xl font-bold text-slate-800" /></div><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Pagine per Lezione (Media)</label><input type="number" placeholder="9" value={newPagesPerLesson} onChange={e => setNewPagesPerLesson(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 text-center text-xl font-bold text-slate-800" /></div><div className="flex gap-2"><button type="button" onClick={() => setIsGoalModalOpen(false)} className="flex-1 py-3 bg-slate-100 rounded-xl font-medium">Annulla</button><button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Salva</button></div></form></div></div>)}
                     {isNoteModalOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 animate-in zoom-in-95 border border-yellow-200 bg-yellow-50/50"><div className="flex items-center gap-2 mb-4 text-yellow-700"><StickyNote size={20} /><h3 className="text-lg font-bold">Annotazioni</h3></div><p className="text-xs text-slate-500 mb-2">Note per <strong>{activeSubSubject || activeSubject}</strong>:</p><form onSubmit={handleUpdateNote} className="space-y-4"><textarea autoFocus rows="5" placeholder="Scrivi qui i tuoi appunti..." value={newNoteValue} onChange={e => setNewNoteValue(e.target.value)} className="w-full bg-white border border-yellow-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 resize-none shadow-sm" /><div className="flex gap-2"><button type="button" onClick={() => setIsNoteModalOpen(false)} className="flex-1 py-3 bg-white text-slate-500 rounded-xl font-medium border border-slate-200 hover:bg-slate-50">Annulla</button><button type="submit" className="flex-1 bg-yellow-500 text-white py-3 rounded-xl font-bold shadow-lg shadow-yellow-200 hover:bg-yellow-600">Salva Nota</button></div></form></div></div>)}
                     {isExamModalOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-xs rounded-3xl shadow-2xl p-6 animate-in zoom-in-95 border border-blue-100"><div className="flex items-center gap-2 mb-4 text-blue-700"><CalendarClock size={20} /><h3 className="text-lg font-bold">Data Esame</h3></div><p className="text-xs text-slate-500 mb-4">Imposta la data per <strong>{activeSubSubject || activeSubject}</strong></p><form onSubmit={handleUpdateExamDate} className="space-y-4"><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Giorno Esame</label><input autoFocus type="date" value={newExamDate} onChange={e => setNewExamDate(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 text-center font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30" /></div><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1 flex items-center gap-1"><Hourglass size={10} /> Anticipo (giorni)</label><input type="number" value={newBufferDays} onChange={e => setNewBufferDays(e.target.value)} placeholder="20" className="w-full bg-slate-50 border rounded-xl px-4 py-3 text-center font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30" /></div><div className="flex gap-2 pt-2"><button type="button" onClick={() => setIsExamModalOpen(false)} className="flex-1 py-3 bg-slate-100 rounded-xl font-medium hover:bg-slate-200">Annulla</button><button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700">Salva</button></div></form></div></div>)}
                     {isAppelloModalOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-xs rounded-3xl shadow-2xl p-6 animate-in zoom-in-95 border border-indigo-100"><div className="flex items-center gap-2 mb-4 text-indigo-700"><CalendarDays size={20} /><h3 className="text-lg font-bold">Nuovo Appello</h3></div><form onSubmit={handleAddAppello} className="space-y-4"><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Data Appello</label><input autoFocus type="date" value={newAppelloDate} onChange={e => setNewAppelloDate(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 text-center font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" /></div><div className="space-y-1"><label className="text-xs font-bold text-slate-400 uppercase ml-1">Tipo / Note</label><input type="text" placeholder="Es. Scritto, Orale..." value={newAppelloNote} onChange={e => setNewAppelloNote(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30" /></div><div className="flex gap-2 pt-2"><button type="button" onClick={() => setIsAppelloModalOpen(false)} className="flex-1 py-3 bg-slate-100 rounded-xl font-medium hover:bg-slate-200">Annulla</button><button type="submit" className="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700">Aggiungi</button></div></form></div></div>)}
-                    
-                    {/* Global Calendar Modal */}
-                    {isGlobalCalendarOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-[55] flex items-center justify-center p-4"><div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[90vh] relative"><div className="flex justify-between items-center mb-4 shrink-0"><div className="flex items-center gap-2 text-slate-800"><CalendarDays size={24} className="text-blue-600" /><h3 className="text-xl font-bold">Calendario Appelli</h3></div><button onClick={() => setIsGlobalCalendarOpen(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400"><X size={20} /></button></div><div className="flex items-center justify-between mb-4 bg-slate-50 p-2 rounded-xl shrink-0"><button onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() - 1, 1))} className="p-2 hover:bg-white rounded-lg shadow-sm text-slate-600"><ChevronLeft size={20} /></button><span className="font-bold text-slate-700 capitalize">{calDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}</span><button onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() + 1, 1))} className="p-2 hover:bg-white rounded-lg shadow-sm text-slate-600"><ChevronRight size={20} /></button></div><div className="grid grid-cols-7 gap-1 mb-2 text-center shrink-0">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map(d => (<div key={d} className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{d}</div>))}</div><div className="grid grid-cols-7 gap-1 flex-1 overflow-y-auto p-1 relative">{Array.from({ length: getFirstDayOfMonth(calDate) }).map((_, i) => (<div key={`empty-${i}`} className="aspect-square"></div>))}
-                    
-                    {(() => {
-                        const allApps = getAllAppelli();
-                        const today = new Date(); today.setHours(0,0,0,0);
-                        const upcomingApps = allApps.filter(a => new Date(a.date) >= today);
-                        
-                        let targetAppello = null;
-                        if (lastJumpIndex >= 0 && lastJumpIndex < upcomingApps.length) {
-                             targetAppello = upcomingApps[lastJumpIndex];
-                        }
-
-                        return Array.from({ length: getDaysInMonth(calDate) }).map((_, i) => { 
-                            const day = i + 1; 
-                            const currentDayDate = new Date(calDate.getFullYear(), calDate.getMonth(), day); 
-                            const isToday = currentDayDate.getTime() === today.getTime(); 
-                            
-                            let isTarget = false;
-                            if (targetAppello) {
-                                const [tYear, tMonth, tDay] = targetAppello.date.split('-').map(Number);
-                                const cYear = currentDayDate.getFullYear();
-                                const cMonth = currentDayDate.getMonth() + 1; 
-                                const cDay = currentDayDate.getDate();
-                                
-                                isTarget = (cYear === tYear && cMonth === tMonth && cDay === tDay);
-                            }
-
-                            const dayExams = allApps.filter(a => { const d = new Date(a.date); return d.getDate() === day && d.getMonth() === calDate.getMonth() && d.getFullYear() === calDate.getFullYear(); }); 
-                            
-                            return (<div key={day} className={`aspect-square rounded-xl border ${isToday ? 'border-blue-500 bg-blue-50' : 'border-slate-100 bg-white'} ${isTarget ? 'ring-2 ring-indigo-500 ring-offset-1 z-10 shadow-lg' : ''} flex flex-col items-center justify-center relative transition-all hover:shadow-md cursor-default`} onMouseEnter={(e) => { if (dayExams.length > 0) { const rect = e.currentTarget.getBoundingClientRect(); setTooltip({ x: rect.left + rect.width / 2, y: rect.top, exams: dayExams }); } }} onMouseLeave={() => setTooltip(null)}><span className={`text-sm font-bold ${isToday ? 'text-blue-600' : 'text-slate-700'} ${dayExams.length > 0 ? '-mt-1' : ''}`}>{day}</span><div className="flex gap-0.5 mt-1 flex-wrap justify-center px-1">{dayExams.map((ex, idx) => ( <div key={idx} className={`w-2 h-2 rounded-full ${ex.color || 'bg-gray-400'}`}></div> ))}</div></div>); 
-                        });
-                    })()}
-                    </div><div className="mt-4 pt-4 border-t border-slate-100 shrink-0"><button onClick={handleJumpToNextAppello} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 active:scale-95 transition-all"><MapPin size={18} /> Prossimo Appello</button></div></div></div>)}
-                    
+                    {isGlobalCalendarOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-[55] flex items-center justify-center p-4"><div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 animate-in zoom-in-95 overflow-hidden flex flex-col max-h-[90vh] relative"><div className="flex justify-between items-center mb-4 shrink-0"><div className="flex items-center gap-2 text-slate-800"><CalendarDays size={24} className="text-blue-600" /><h3 className="text-xl font-bold">Calendario Appelli</h3></div><button onClick={() => setIsGlobalCalendarOpen(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400"><X size={20} /></button></div><div className="flex items-center justify-between mb-4 bg-slate-50 p-2 rounded-xl shrink-0"><button onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() - 1, 1))} className="p-2 hover:bg-white rounded-lg shadow-sm text-slate-600"><ChevronLeft size={20} /></button><span className="font-bold text-slate-700 capitalize">{calDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}</span><button onClick={() => setCalDate(new Date(calDate.getFullYear(), calDate.getMonth() + 1, 1))} className="p-2 hover:bg-white rounded-lg shadow-sm text-slate-600"><ChevronRight size={20} /></button></div><div className="grid grid-cols-7 gap-1 mb-2 text-center shrink-0">{['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map(d => (<div key={d} className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{d}</div>))}</div><div className="grid grid-cols-7 gap-1 flex-1 overflow-y-auto p-1 relative">{Array.from({ length: getFirstDayOfMonth(calDate) }).map((_, i) => (<div key={`empty-${i}`} className="aspect-square"></div>))}{Array.from({ length: getDaysInMonth(calDate) }).map((_, i) => { const day = i + 1; const currentDayDate = new Date(calDate.getFullYear(), calDate.getMonth(), day); const today = new Date(); today.setHours(0,0,0,0); const isToday = currentDayDate.getTime() === today.getTime(); const dayExams = allAppelli.filter(a => { const d = new Date(a.date); return d.getDate() === day && d.getMonth() === calDate.getMonth() && d.getFullYear() === calDate.getFullYear(); }); const isHighlighted = dayExams.some(e => e.id === highlightedAppelloId); return (<div key={day} className={`aspect-square rounded-xl border transition-all hover:shadow-md cursor-default flex flex-col items-center justify-center relative ${isHighlighted ? 'border-indigo-500 ring-2 ring-indigo-200 bg-indigo-50 z-10 scale-105' : isToday ? 'border-blue-500 bg-blue-50' : 'border-slate-100 bg-white'}`} onMouseEnter={(e) => { if (dayExams.length > 0) { const rect = e.currentTarget.getBoundingClientRect(); setTooltip({ x: rect.left + rect.width / 2, y: rect.top, exams: dayExams }); } }} onMouseLeave={() => setTooltip(null)}><span className={`text-sm font-bold ${isHighlighted ? 'text-indigo-700' : isToday ? 'text-blue-600' : 'text-slate-700'} ${dayExams.length > 0 ? '-mt-1' : ''}`}>{day}</span><div className="flex gap-0.5 mt-1 flex-wrap justify-center px-1">{dayExams.map((ex, idx) => ( <div key={idx} className={`w-2 h-2 rounded-full ${ex.color || 'bg-gray-400'}`}></div> ))}</div></div>); })}</div><div className="mt-4 pt-4 border-t border-slate-100 shrink-0"><button onClick={jumpToNextAppello} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 active:scale-95 transition-all"><MapPin size={18} /> Prossimo Appello</button></div></div></div>)}
                     {tooltip && (<div className="fixed z-[9999] bg-slate-800 text-white text-[10px] p-2.5 rounded-lg shadow-xl pointer-events-none transition-all animate-in fade-in zoom-in-95 duration-200" style={{ top: tooltip.y, left: tooltip.x, transform: 'translate(-50%, -110%)' }}><div className="flex flex-col gap-1.5">{tooltip.exams.map((ex, idx) => (<div key={idx} className="flex items-center gap-2 whitespace-nowrap"><div className={`w-2 h-2 rounded-full ${ex.color || 'bg-gray-400'}`}></div><span className="font-medium">{ex.subject} {ex.note ? <span className="opacity-70">({ex.note})</span> : ''}</span></div>))}</div><div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div></div>)}
+                    {(isSubjectModalOpen || isSubSubjectModalOpen) && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-white w-full max-w-sm rounded-3xl p-6"><h3 className="text-lg font-bold mb-4">{isSubjectModalOpen ? "Nuova Materia" : "Nuovo Argomento"}</h3><form onSubmit={isSubjectModalOpen ? handleAddSubject : handleAddSubSubject} className="space-y-4"><input autoFocus type="text" placeholder="Nome..." value={isSubjectModalOpen ? newSubjectName : newSubSubjectName} onChange={e => isSubjectModalOpen ? setNewSubjectName(e.target.value) : setNewSubSubjectName(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3" /><div className="flex gap-2"><button type="button" onClick={() => { setIsSubjectModalOpen(false); setIsSubSubjectModalOpen(false); }} className="flex-1 py-3 bg-slate-100 rounded-xl font-medium">Annulla</button><button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg">Crea</button></div></form></div></div>)}
                     {deleteConfig.isOpen && (<div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-[60] flex items-center justify-center p-4"><div className="bg-white w-full max-w-sm rounded-3xl p-6 border border-red-100"><div className="flex items-center gap-2 text-red-600 mb-4"><AlertTriangle /><h3 className="font-bold text-slate-800">Eliminare?</h3></div><p className="text-slate-500 text-sm mb-6 leading-relaxed">{deleteConfig.type === 'subject' && `Stai per eliminare la materia "${deleteConfig.data}" e tutti i file al suo interno. Questa azione è irreversibile.`}{deleteConfig.type === 'subSubject' && `Stai per rimuovere l'argomento "${deleteConfig.data.subName}" e scollegare i file associati.`}{deleteConfig.type === 'item' && `Vuoi davvero eliminare questa attività dal registro?`}{deleteConfig.type === 'appello' && `Vuoi rimuovere questa data dal calendario appelli?`}</p><div className="flex gap-3"><button onClick={() => setDeleteConfig({ isOpen: false, type: null, data: null })} className="flex-1 py-3 bg-slate-50 rounded-xl font-medium">Annulla</button><button onClick={confirmDelete} className="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold shadow-lg">Elimina</button></div></div></div>)}
+
+                    {isAchievementsOpen && (
+                        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                             {/* GREENHOUSE CARD CON DESIGN AGGIORNATO */}
+                            <div 
+                                className={`w-full max-w-lg greenhouse-card rounded-[2.5rem] animate-window-open flex flex-col relative transition-all duration-700 card-glow-effect`}
+                                style={cardStyle}
+                            >
+                                {/* Background Dinamico Sfumato */}
+                                <div className={`absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_50%_30%,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none transition-colors duration-700`}></div>
+                                {/* BACKGROUND TINT (Leggero) - NUOVO */}
+                                <div className={`absolute inset-0 opacity-10 -z-10 transition-colors duration-700`} style={{ backgroundColor: streakData.currentRank.glow }}></div>
+
+                                {/* Header */}
+                                <header className="relative z-10 px-8 pt-8 flex justify-between items-start">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 glass-panel rounded-full shadow-sm">
+                                        <Sprout size={14} className={streakData.currentRank.color} />
+                                        <span className={`text-[10px] font-black uppercase tracking-widest ${streakData.currentRank.color.replace('text-', 'text-').replace('600', '900')}`}>Il Tuo Giardino</span>
+                                    </div>
+                                    
+                                    {/* Close Button positioned absolutely on top right */}
+                                    <button onClick={() => setIsAchievementsOpen(false)} className="p-2 text-slate-400 hover:text-slate-600 transition-colors bg-white/50 hover:bg-white rounded-full shadow-sm backdrop-blur-sm"><X size={20} /></button>
+                                </header>
+                                
+                                {/* Stats Header */}
+                                <div className="flex flex-col items-end px-8 -mt-2 z-10">
+                                    {/* LINFA */}
+                                     <div className="flex items-center gap-1.5 text-slate-700">
+                                        <Droplets size={14} className="text-blue-500 fill-blue-500" />
+                                        <span className="text-sm font-black">{streakData.score}</span>
+                                    </div>
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase mb-2">Linfa Totale</span>
+
+                                    {/* STREAK FUOCO - NUOVO */}
+                                    <div className="flex flex-col items-end mt-1">
+                                        <div className="flex items-center gap-1.5 text-slate-700">
+                                            <LucideIcon name="Flame" size={14} className="text-orange-500 fill-orange-500" />
+                                            <span className="text-sm font-black">{streakData.streakDays}</span>
+                                        </div>
+                                        <span className="text-[9px] font-bold text-slate-400 uppercase">Giorni Streak</span>
+                                    </div>
+                                </div>
+
+                                {/* MAIN STAGE */}
+                                <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-4">
+                                    
+                                    {/* Cerchio Icona Principale con Effetto Vetro + Glow */}
+                                    <div 
+                                        className={`w-40 h-40 rounded-full flex items-center justify-center mb-6 animate-float-icon transition-all duration-500 relative`}
+                                    >
+                                        {/* Back glow circle using current rank color */}
+                                        <div className="absolute inset-0 rounded-full opacity-40 blur-3xl animate-soft-pulse" style={{ backgroundColor: streakData.currentRank.glow, transform: 'scale(1.5)' }}></div>
+                                        
+                                        {/* Glass Circle */}
+                                        <div className="relative w-full h-full rounded-full bg-white/40 backdrop-blur-xl border border-white/80 shadow-xl flex items-center justify-center ring-4 ring-white/30">
+                                            <CustomIcon type={streakData.currentRank.icon} size={80} className={`${streakData.currentRank.color} drop-shadow-2xl`} />
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Testi */}
+                                    <div className="text-center px-8 animate-pop-in relative">
+                                        <h2 className={`text-4xl font-black tracking-tight mb-2 ${streakData.currentRank.color.replace('text-', 'text-').replace('600', '900')}`} style={{ textShadow: '0 2px 20px rgba(255,255,255,0.8)' }}>
+                                            {streakData.currentRank.name}
+                                        </h2>
+                                        <p className="text-slate-600 font-semibold text-sm max-w-xs mx-auto leading-relaxed tracking-wide">
+                                            {streakData.currentRank.desc}
+                                        </p>
+                                    </div>
+
+                                    {/* Barra Progresso glowing */}
+                                    <div className="w-64 mt-8 relative">
+                                        {streakData.nextRank ? (
+                                            <>
+                                                <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase mb-2 px-1">
+                                                    <span>Livello Attuale</span>
+                                                    <span>Prossimo</span>
+                                                </div>
+                                                <div className="h-2.5 w-full bg-white/40 rounded-full overflow-hidden backdrop-blur-md border border-white/60 shadow-inner">
+                                                    <div 
+                                                        className={`h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(255,255,255,0.8)_inset] ${streakData.currentRank.color.replace('text-', 'bg-')}`} 
+                                                        style={{ width: `${Math.min((streakData.score / streakData.nextRank.score) * 100, 100)}%` }}
+                                                    ></div>
+                                                </div>
+                                                <div className="text-center mt-2 text-[10px] font-bold text-slate-400">
+                                                    Mancano {streakData.nextRank.score - streakData.score} Linfa
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="px-4 py-3 bg-yellow-100/80 backdrop-blur-sm text-yellow-700 rounded-xl text-xs font-bold text-center border border-yellow-200 shadow-sm">
+                                                🏆 Massima Evoluzione Raggiunta!
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* TIMELINE SCROLLABLE (IL TUO VIAGGIO) */}
+                                <div className="relative z-10 w-full bg-transparent pb-6 pt-5 mt-auto">
+                                    
+                                    {/* SCROLLABLE FLEX INSTEAD OF GRID */}
+                                    <div className="flex gap-4 overflow-x-auto custom-scrollbar px-6 pb-4 snap-x">
+                                        {STREAK_MILESTONES.map((rank, idx) => {
+                                            const isUnlocked = streakData.score >= rank.score;
+                                            const isCurrent = streakData.currentRank.name === rank.name;
+                                            
+                                            return (
+                                                <div 
+                                                    key={rank.name} 
+                                                    className={`snap-start shrink-0 w-28 flex flex-col items-center gap-2 p-2 rounded-2xl border transition-all duration-300
+                                                        ${isCurrent ? 'bg-white/80 shadow-md scale-105 border-white ring-1 ring-white/50 backdrop-blur-xl' : ''}
+                                                        ${isUnlocked && !isCurrent ? 'bg-white/40 border-white/30' : ''}
+                                                        ${!isUnlocked ? 'bg-slate-100/30 border-transparent opacity-40 grayscale' : ''}
+                                                    `}
+                                                >
+                                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-sm ${isUnlocked ? rank.bg : 'bg-slate-200'}`}>
+                                                        <CustomIcon type={rank.icon} size={16} className={isUnlocked ? rank.color : 'text-slate-400'} />
+                                                    </div>
+                                                    <div className="text-center w-full overflow-hidden">
+                                                        <div className="font-bold text-slate-700 text-[9px] truncate w-full leading-tight">{rank.name}</div>
+                                                        <div className="text-[8px] font-bold text-slate-400 mt-0.5">{rank.score}</div>
+                                                    </div>
+                                                    {isUnlocked && !isCurrent && (
+                                                        <div className="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow-sm transform scale-50">
+                                                            <CheckCircle2 size={12} className="text-emerald-500" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                        {/* Padding finale per scroll */}
+                                        <div className="w-2 shrink-0"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        // WRAPPED IN ERROR BOUNDARY
-        root.render(<ErrorBoundary><StudyTracker /></ErrorBoundary>);
+        ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(ErrorBoundary,null,React.createElement(StudyTracker)));
     </script>
 </body>
 </html>
